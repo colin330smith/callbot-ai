@@ -59,6 +59,18 @@ class BusinessUpdate(BaseModel):
     services: Optional[str] = None
     business_hours: Optional[str] = None
 
+class OnboardingData(BaseModel):
+    business_name: str
+    industry: str
+    phone: Optional[str] = None
+    service_area: Optional[str] = None
+    services: list[str] = []
+    pricing: Optional[str] = None
+    business_hours: Optional[str] = None
+    faqs: list[dict] = []
+    voice: str = "rachel"
+    greeting: Optional[str] = None
+
 # Helpers
 def hash_password(password: str) -> str:
     salt = secrets.token_hex(16)
@@ -217,13 +229,66 @@ async def get_calls(business_id: str, request: Request):
     return {"calls": [c for c in _calls if c.get("business_id") == business_id]}
 
 @app.post("/api/onboarding/{business_id}/complete")
-async def complete_onboarding(business_id: str, request: Request):
+async def complete_onboarding(business_id: str, data: OnboardingData, request: Request):
     user = await require_auth(request)
     business = _businesses.get(business_id)
     if not business or business["user_id"] != user["id"]:
         raise HTTPException(status_code=404, detail="Business not found")
 
-    # Create Vapi assistant
+    # Update business with onboarding data
+    business["name"] = data.business_name
+    business["industry"] = data.industry
+    business["phone"] = data.phone
+    business["service_area"] = data.service_area
+    business["services"] = ", ".join(data.services) if data.services else ""
+    business["pricing"] = data.pricing
+    business["business_hours"] = data.business_hours or "Mon-Fri 9am-5pm"
+    business["faqs"] = data.faqs
+
+    # Build comprehensive AI system prompt
+    services_text = ", ".join(data.services) if data.services else "various services"
+
+    faqs_text = ""
+    if data.faqs:
+        faqs_text = "\n\nFrequently Asked Questions you should know:\n"
+        for faq in data.faqs:
+            faqs_text += f"Q: {faq.get('question', '')}\nA: {faq.get('answer', '')}\n"
+
+    system_prompt = f"""You are a professional AI phone receptionist for {data.business_name}, a {data.industry} business.
+
+BUSINESS INFORMATION:
+- Business Name: {data.business_name}
+- Industry: {data.industry}
+- Service Area: {data.service_area or 'Local area'}
+- Business Hours: {data.business_hours or 'Mon-Fri 9am-5pm'}
+
+SERVICES OFFERED:
+{services_text}
+
+{f"PRICING INFORMATION: {data.pricing}" if data.pricing else ""}
+{faqs_text}
+
+YOUR RESPONSIBILITIES:
+1. Answer calls professionally and warmly
+2. Understand caller needs and provide helpful information
+3. Schedule appointments when requested - collect: name, phone, service needed, preferred date/time
+4. Answer questions about services, pricing, and availability
+5. Take messages for complex issues that need human follow-up
+6. Always be helpful, patient, and professional
+
+APPOINTMENT BOOKING:
+When a caller wants to schedule an appointment, collect:
+- Their full name
+- Phone number
+- What service they need
+- Preferred date and time
+Then confirm the details and let them know they'll receive a confirmation.
+
+If you don't know something specific, offer to have someone call them back with more details."""
+
+    greeting = data.greeting or f"Hello! Thank you for calling {data.business_name}. How can I help you today?"
+
+    # Create Vapi assistant with full business context
     phone_number = None
     assistant_id = None
 
@@ -234,11 +299,32 @@ async def complete_onboarding(business_id: str, request: Request):
                     "https://api.vapi.ai/assistant",
                     headers={"Authorization": f"Bearer {VAPI_API_KEY}"},
                     json={
-                        "name": f"{business['name']} AI Receptionist",
-                        "voice": {"voiceId": "rachel", "provider": "11labs"},
-                        "model": {"provider": "openai", "model": "gpt-4-turbo-preview", "messages": [{"role": "system", "content": f"You are Alex, a professional AI receptionist for {business['name']}. Answer calls professionally, schedule appointments, and answer questions."}]},
-                        "firstMessage": f"Hello! Thank you for calling {business['name']}. How can I help you today?",
-                        "serverUrl": f"{BASE_URL}/api/webhooks/vapi"
+                        "name": f"{data.business_name} AI Receptionist",
+                        "voice": {"voiceId": data.voice, "provider": "11labs"},
+                        "model": {
+                            "provider": "openai",
+                            "model": "gpt-4-turbo-preview",
+                            "messages": [{"role": "system", "content": system_prompt}]
+                        },
+                        "firstMessage": greeting,
+                        "serverUrl": f"{BASE_URL}/api/webhooks/vapi",
+                        "functions": [
+                            {
+                                "name": "bookAppointment",
+                                "description": "Book an appointment for the caller",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "customer_name": {"type": "string", "description": "Full name of the customer"},
+                                        "phone_number": {"type": "string", "description": "Customer phone number"},
+                                        "service_type": {"type": "string", "description": "Type of service requested"},
+                                        "preferred_date": {"type": "string", "description": "Preferred date and time"},
+                                        "notes": {"type": "string", "description": "Any additional notes"}
+                                    },
+                                    "required": ["customer_name", "phone_number", "service_type", "preferred_date"]
+                                }
+                            }
+                        ]
                     },
                     timeout=30
                 )
@@ -253,6 +339,8 @@ async def complete_onboarding(business_id: str, request: Request):
                     )
                     if phone_resp.status_code == 201:
                         phone_number = phone_resp.json().get("number")
+                else:
+                    print(f"Vapi assistant creation failed: {resp.status_code} - {resp.text}")
         except Exception as e:
             print(f"Vapi error: {e}")
 

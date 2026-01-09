@@ -1,0 +1,135 @@
+# CallBot AI - Docker Compose Production Stack
+version: '3.8'
+
+services:
+  # =============================================================================
+  # Application
+  # =============================================================================
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: callbot-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://callbot:${DB_PASSWORD}@postgres:5432/callbot
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY}
+      - VAPI_API_KEY=${VAPI_API_KEY}
+      - VAPI_ASSISTANT_ID=${VAPI_ASSISTANT_ID}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - STRIPE_PRICE_ID=${STRIPE_PRICE_ID}
+      - EMAIL_PROVIDER=${EMAIL_PROVIDER:-smtp}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - FROM_EMAIL=${FROM_EMAIL:-noreply@callbotai.com}
+      - FROM_NAME=${FROM_NAME:-CallBot AI}
+      - BASE_URL=${BASE_URL:-https://app.callbotai.com}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_FORMAT=${LOG_FORMAT:-json}
+      - RATE_LIMIT_ENABLED=true
+      - CSRF_ENABLED=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend/static:/app/static:ro
+      - ./backend/templates:/app/templates:ro
+      - app-logs:/app/logs
+    networks:
+      - callbot-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # =============================================================================
+  # PostgreSQL Database
+  # =============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: callbot-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=callbot
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=callbot
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - callbot-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U callbot -d callbot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # Redis Cache/Sessions
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: callbot-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - callbot-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # Nginx Reverse Proxy (Production)
+  # =============================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: callbot-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./backend/static:/var/www/static:ro
+    depends_on:
+      - app
+    networks:
+      - callbot-network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  callbot-network:
+    driver: bridge
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres-data:
+  redis-data:
+  app-logs:

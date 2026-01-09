@@ -53,32 +53,39 @@
             <p class="mt-2 text-gray-600">This takes about 3 minutes</p>
         </div>
 
-        <!-- Progress Steps -->
+        <!-- Progress Bar -->
         <div class="mb-8">
-            <div class="flex items-center justify-between">
-                <div class="step-indicator flex flex-col items-center" data-step="1">
-                    <div class="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center text-sm font-semibold shadow-sm">1</div>
-                    <span class="text-xs font-medium mt-2 text-primary-600">Business</span>
+            <!-- Continuous Progress Bar -->
+            <div class="relative">
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="progressBar" class="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full transition-all duration-500 ease-out" style="width: 20%"></div>
                 </div>
-                <div class="flex-1 h-1 mx-2 bg-gray-200 rounded step-line" data-line="1"></div>
-                <div class="step-indicator flex flex-col items-center" data-step="2">
-                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-semibold">2</div>
-                    <span class="text-xs font-medium mt-2 text-gray-400">Services</span>
+                <div class="flex justify-between mt-3">
+                    <span id="progressText" class="text-sm font-medium text-primary-600">Step 1 of 5</span>
+                    <span id="progressPercent" class="text-sm font-medium text-gray-500">20%</span>
                 </div>
-                <div class="flex-1 h-1 mx-2 bg-gray-200 rounded step-line" data-line="2"></div>
-                <div class="step-indicator flex flex-col items-center" data-step="3">
-                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-semibold">3</div>
-                    <span class="text-xs font-medium mt-2 text-gray-400">Pricing</span>
+            </div>
+            <!-- Step Labels -->
+            <div class="flex justify-between mt-4 px-2">
+                <div class="step-label text-center" data-step="1">
+                    <div class="w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-semibold mx-auto">1</div>
+                    <span class="text-xs font-medium mt-1 block text-primary-600">Business</span>
                 </div>
-                <div class="flex-1 h-1 mx-2 bg-gray-200 rounded step-line" data-line="3"></div>
-                <div class="step-indicator flex flex-col items-center" data-step="4">
-                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-semibold">4</div>
-                    <span class="text-xs font-medium mt-2 text-gray-400">Agent</span>
+                <div class="step-label text-center" data-step="2">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto">2</div>
+                    <span class="text-xs font-medium mt-1 block text-gray-400">Services</span>
                 </div>
-                <div class="flex-1 h-1 mx-2 bg-gray-200 rounded step-line" data-line="4"></div>
-                <div class="step-indicator flex flex-col items-center" data-step="5">
-                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-semibold">5</div>
-                    <span class="text-xs font-medium mt-2 text-gray-400">Launch</span>
+                <div class="step-label text-center" data-step="3">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto">3</div>
+                    <span class="text-xs font-medium mt-1 block text-gray-400">Call Mode</span>
+                </div>
+                <div class="step-label text-center" data-step="4">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto">4</div>
+                    <span class="text-xs font-medium mt-1 block text-gray-400">Agent</span>
+                </div>
+                <div class="step-label text-center" data-step="5">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto">5</div>
+                    <span class="text-xs font-medium mt-1 block text-gray-400">Launch</span>
                 </div>
             </div>
         </div>
@@ -188,82 +195,108 @@
                 </div>
             </div>
 
-            <!-- Step 3: Pricing & Availability (Form-based) -->
+            <!-- Step 3: Call Mode Selection -->
             <div class="step-content hidden p-6 sm:p-8" data-step="3">
                 <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900">Pricing & availability</h2>
-                    <p class="mt-1 text-sm text-gray-500">Help your AI answer common pricing questions.</p>
+                    <h2 class="text-xl font-semibold text-gray-900">How should AI handle your calls?</h2>
+                    <p class="mt-1 text-sm text-gray-500">Choose how you want CallBot AI to work with your existing phone.</p>
                 </div>
                 <div class="space-y-5">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="price_service_call" class="block text-sm font-medium text-gray-700 mb-1.5">Service call / diagnostic fee</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-3 text-gray-500">$</span>
-                                <input type="number" id="price_service_call" min="0"
-                                    class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                                    placeholder="89">
+                    <!-- Call Mode Selection -->
+                    <div class="space-y-4">
+                        <!-- Call Forwarding Option -->
+                        <label class="call-mode-option relative flex p-5 border-2 border-primary-500 bg-primary-50 rounded-xl cursor-pointer transition" data-mode="forwarding">
+                            <input type="radio" name="call_mode" value="forwarding" checked class="sr-only">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-base font-semibold text-gray-900">Call Forwarding</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">Recommended</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">AI catches calls only when you don't answer. Your phone rings first, and if you miss it, AI picks up before voicemail.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    Keep your existing number
+                                </div>
+                                <div class="flex items-center text-sm text-gray-500 mt-1">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    Answer calls yourself when available
+                                </div>
                             </div>
+                            <svg class="w-6 h-6 text-primary-600 ml-4 check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </label>
+
+                        <!-- Call Takeover Option -->
+                        <label class="call-mode-option relative flex p-5 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gray-300 transition" data-mode="takeover">
+                            <input type="radio" name="call_mode" value="takeover" class="sr-only">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-base font-semibold text-gray-900">Full Takeover</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">Hands-free</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">AI handles ALL calls. Every call goes directly to your AI agent. Perfect if you want to focus 100% on fieldwork.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    Zero interruptions
+                                </div>
+                                <div class="flex items-center text-sm text-gray-500 mt-1">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    Get notifications for urgent calls
+                                </div>
+                            </div>
+                            <svg class="w-6 h-6 text-primary-600 ml-4 check-icon hidden" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </label>
+                    </div>
+
+                    <!-- Emergency Dispatch Section -->
+                    <div class="pt-6 border-t border-gray-200">
+                        <div class="flex items-center justify-between p-4 bg-orange-50 rounded-xl border border-orange-200">
+                            <div class="flex-1">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-orange-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                    <p class="text-sm font-semibold text-gray-900">Emergency Dispatch Mode</p>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1 ml-7">For urgent calls, AI stays on the line with the customer while simultaneously reaching out to your on-call team.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer ml-4">
+                                <input type="checkbox" id="emergency_dispatch" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-100 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                            </label>
                         </div>
-                        <div>
-                            <label for="price_hourly" class="block text-sm font-medium text-gray-700 mb-1.5">Hourly rate (if applicable)</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-3 text-gray-500">$</span>
-                                <input type="number" id="price_hourly" min="0"
-                                    class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                                    placeholder="150">
+
+                        <!-- On-call workers (shown when emergency dispatch is enabled) -->
+                        <div id="onCallSection" class="hidden mt-4 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">On-call worker phones (comma-separated)</label>
+                                <input type="text" id="oncall_phones"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
+                                    placeholder="(555) 111-2222, (555) 333-4444">
+                                <p class="mt-1.5 text-sm text-gray-500">AI will call these numbers in order during emergencies while keeping the customer on the line.</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Emergency keywords (what triggers dispatch)</label>
+                                <input type="text" id="emergency_keywords"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
+                                    placeholder="emergency, urgent, flooding, no heat, burst pipe">
                             </div>
                         </div>
                     </div>
 
-                    <div class="space-y-4 pt-4">
-                        <!-- Toggle: Free estimates -->
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Free estimates</p>
-                                <p class="text-sm text-gray-500">Offer free estimates for larger projects</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="free_estimates" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-                            </label>
-                        </div>
-
-                        <!-- Toggle: Financing -->
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Financing available</p>
-                                <p class="text-sm text-gray-500">Offer payment plans or financing options</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="offers_financing" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-                            </label>
-                        </div>
-
-                        <!-- Toggle: Emergency service -->
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Emergency / after-hours service</p>
-                                <p class="text-sm text-gray-500">Available for urgent requests outside business hours</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="offers_emergency" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="response_time" class="block text-sm font-medium text-gray-700 mb-1.5">Typical response time</label>
-                        <select id="response_time" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 bg-white">
-                            <option value="">Select response time</option>
-                            <option value="same-day">Same day</option>
-                            <option value="within-24-hours">Within 24 hours</option>
-                            <option value="within-48-hours">Within 48 hours</option>
-                            <option value="1-2-business-days">1-2 business days</option>
-                            <option value="by-appointment">By appointment</option>
+                    <!-- Forwarding number (for forwarding mode) -->
+                    <div id="forwardingSection" class="pt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Number of rings before AI answers</label>
+                        <select id="rings_before_ai" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 bg-white">
+                            <option value="2">2 rings (~10 seconds)</option>
+                            <option value="3" selected>3 rings (~15 seconds)</option>
+                            <option value="4">4 rings (~20 seconds)</option>
+                            <option value="5">5 rings (~25 seconds)</option>
                         </select>
+                        <p class="mt-1.5 text-sm text-gray-500">How long your phone rings before AI picks up.</p>
                     </div>
                 </div>
             </div>
@@ -506,32 +539,31 @@
             document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
             document.querySelector(`.step-content[data-step="${step}"]`).classList.remove('hidden');
 
-            // Update progress indicators
-            document.querySelectorAll('.step-indicator').forEach(el => {
+            // Update progress bar
+            const progress = (step / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Step ${step} of ${totalSteps}`;
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+
+            // Update step labels
+            document.querySelectorAll('.step-label').forEach(el => {
                 const s = parseInt(el.dataset.step);
                 const circle = el.querySelector('div');
                 const label = el.querySelector('span');
 
                 if (s < step) {
-                    circle.className = 'w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center text-sm font-semibold shadow-sm';
-                    circle.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
-                    label.className = 'text-xs font-medium mt-2 text-primary-600';
+                    circle.className = 'w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-semibold mx-auto';
+                    circle.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+                    label.className = 'text-xs font-medium mt-1 block text-primary-600';
                 } else if (s === step) {
-                    circle.className = 'w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center text-sm font-semibold shadow-sm';
+                    circle.className = 'w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-semibold mx-auto';
                     circle.textContent = s;
-                    label.className = 'text-xs font-medium mt-2 text-primary-600';
+                    label.className = 'text-xs font-medium mt-1 block text-primary-600';
                 } else {
-                    circle.className = 'w-10 h-10 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-semibold';
+                    circle.className = 'w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto';
                     circle.textContent = s;
-                    label.className = 'text-xs font-medium mt-2 text-gray-400';
+                    label.className = 'text-xs font-medium mt-1 block text-gray-400';
                 }
-            });
-
-            document.querySelectorAll('.step-line').forEach(el => {
-                const l = parseInt(el.dataset.line);
-                el.className = l < step
-                    ? 'flex-1 h-1 mx-2 bg-primary-600 rounded step-line'
-                    : 'flex-1 h-1 mx-2 bg-gray-200 rounded step-line';
             });
 
             document.getElementById('prevBtn').classList.toggle('hidden', step === 1);
@@ -568,14 +600,13 @@
                 const weekend = document.getElementById('hours_weekend').value;
                 data.business_hours = `Monday-Friday: ${weekday}, Saturday-Sunday: ${weekend}`;
             } else if (step === 3) {
-                data.pricing = {
-                    service_call: document.getElementById('price_service_call').value,
-                    hourly_rate: document.getElementById('price_hourly').value,
-                    free_estimates: document.getElementById('free_estimates').checked
-                };
-                data.offers_financing = document.getElementById('offers_financing').checked;
-                data.offers_emergency = document.getElementById('offers_emergency').checked;
-                data.response_time = document.getElementById('response_time').value;
+                data.call_mode = document.querySelector('input[name="call_mode"]:checked').value;
+                data.rings_before_ai = parseInt(document.getElementById('rings_before_ai').value);
+                data.emergency_dispatch = document.getElementById('emergency_dispatch').checked;
+                if (data.emergency_dispatch) {
+                    data.oncall_phones = document.getElementById('oncall_phones').value;
+                    data.emergency_keywords = document.getElementById('emergency_keywords').value;
+                }
             } else if (step === 4) {
                 data.agent_name = document.getElementById('agent_name').value;
                 data.agent_voice = document.querySelector('input[name="agent_voice"]:checked').value;
@@ -632,6 +663,7 @@
             const industryText = industrySelect.options[industrySelect.selectedIndex]?.text || formData.industry || 'Not set';
 
             const appointmentTypes = formData.appointment_types || [];
+            const callModeText = formData.call_mode === 'takeover' ? 'Full Takeover' : 'Call Forwarding';
 
             summary.innerHTML = `
                 <div class="flex justify-between text-sm">
@@ -647,6 +679,10 @@
                     <span class="font-medium text-gray-900">${formData.agent_name || 'Alex'} (${formData.agent_voice || 'Rachel'})</span>
                 </div>
                 <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Call Mode</span>
+                    <span class="font-medium text-gray-900">${callModeText}</span>
+                </div>
+                <div class="flex justify-between text-sm">
                     <span class="text-gray-500">Services</span>
                     <span class="font-medium text-gray-900">${formData.services ? formData.services.split(',').length + ' selected' : 'None'}</span>
                 </div>
@@ -655,8 +691,8 @@
                     <span class="font-medium text-gray-900">${appointmentTypes.length} enabled</span>
                 </div>
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Emergency service</span>
-                    <span class="font-medium text-gray-900">${formData.offers_emergency ? 'Yes' : 'No'}</span>
+                    <span class="text-gray-500">Emergency dispatch</span>
+                    <span class="font-medium text-gray-900">${formData.emergency_dispatch ? 'Enabled' : 'Off'}</span>
                 </div>
             `;
         }
@@ -674,6 +710,40 @@
                 option.classList.add('border-primary-500', 'bg-primary-50');
                 option.querySelector('.check-icon').classList.remove('hidden');
             });
+        });
+
+        // Call mode selection handling
+        document.querySelectorAll('.call-mode-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.call-mode-option').forEach(opt => {
+                    opt.classList.remove('border-primary-500', 'bg-primary-50');
+                    opt.classList.add('border-gray-200');
+                    opt.querySelector('.check-icon').classList.add('hidden');
+                });
+
+                option.classList.remove('border-gray-200');
+                option.classList.add('border-primary-500', 'bg-primary-50');
+                option.querySelector('.check-icon').classList.remove('hidden');
+
+                // Show/hide forwarding options based on mode
+                const mode = option.dataset.mode;
+                const forwardingSection = document.getElementById('forwardingSection');
+                if (mode === 'forwarding') {
+                    forwardingSection.classList.remove('hidden');
+                } else {
+                    forwardingSection.classList.add('hidden');
+                }
+            });
+        });
+
+        // Emergency dispatch toggle
+        document.getElementById('emergency_dispatch').addEventListener('change', (e) => {
+            const onCallSection = document.getElementById('onCallSection');
+            if (e.target.checked) {
+                onCallSection.classList.remove('hidden');
+            } else {
+                onCallSection.classList.add('hidden');
+            }
         });
 
         document.getElementById('nextBtn').addEventListener('click', async () => {

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Free Trial | CallBot AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        primary: {
+                            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
+                            400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
+                            800: '#3730a3', 900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>body { font-family: 'Inter', system-ui, sans-serif; }</style>
+</head>
+<body class="bg-gray-50 min-h-screen antialiased">
+    <!-- Header -->
+    <nav class="bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-semibold text-gray-900">CallBot AI</span>
+                </a>
+                <a href="/login" class="text-sm font-medium text-gray-600 hover:text-gray-900">
+                    Already have an account? <span class="text-primary-600">Sign in</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex min-h-[calc(100vh-64px)]">
+        <!-- Left side - Form -->
+        <div class="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+            <div class="max-w-md w-full">
+                <div class="text-center mb-8">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Start your 7-day free trial</h1>
+                    <p class="mt-2 text-gray-600">Then $497/month. Cancel anytime.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                    <form id="signupForm" class="space-y-5">
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">Work email</label>
+                            <input type="email" id="email" name="email" required autocomplete="email"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
+                                placeholder="you@company.com">
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                            <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
+                                placeholder="At least 8 characters">
+                        </div>
+
+                        <div>
+                            <label for="businessName" class="block text-sm font-medium text-gray-700 mb-1.5">Business name</label>
+                            <input type="text" id="businessName" name="businessName" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
+                                placeholder="Acme Plumbing LLC">
+                        </div>
+
+                        <div>
+                            <label for="industry" class="block text-sm font-medium text-gray-700 mb-1.5">Industry</label>
+                            <select id="industry" name="industry" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 bg-white">
+                                <option value="">Select your industry</option>
+                                <option value="hvac">HVAC / Heating & Cooling</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="roofing">Roofing</option>
+                                <option value="landscaping">Landscaping</option>
+                                <option value="cleaning">Cleaning Services</option>
+                                <option value="dental">Dental Practice</option>
+                                <option value="medical">Medical Practice</option>
+                                <option value="medspa">Med Spa / Aesthetics</option>
+                                <option value="legal">Law Firm</option>
+                                <option value="accounting">Accounting / CPA</option>
+                                <option value="realestate">Real Estate</option>
+                                <option value="automotive">Auto Repair</option>
+                                <option value="restaurant">Restaurant</option>
+                                <option value="salon">Salon / Barbershop</option>
+                                <option value="fitness">Gym / Fitness</option>
+                                <option value="veterinary">Veterinary</option>
+                                <option value="insurance">Insurance</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div id="errorMsg" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+
+                        <button type="submit" id="submitBtn"
+                            class="w-full py-3.5 px-4 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 focus:ring-4 focus:ring-primary-100 transition flex items-center justify-center">
+                            <span id="btnText">Create account</span>
+                            <svg id="spinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+
+                        <p class="text-xs text-center text-gray-500 mt-4">
+                            By creating an account, you agree to our
+                            <a href="#" class="text-primary-600 hover:underline">Terms of Service</a> and
+                            <a href="#" class="text-primary-600 hover:underline">Privacy Policy</a>.
+                        </p>
+                        <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                            <p class="text-xs text-center text-gray-500">
+                                <svg class="w-4 h-4 inline mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                Card required to start trial. You won't be charged for 7 days.
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side - Benefits (hidden on mobile) -->
+        <div class="hidden lg:flex flex-1 bg-primary-600 items-center justify-center p-12">
+            <div class="max-w-md text-white">
+                <h2 class="text-2xl font-bold mb-8">Get started in minutes</h2>
+
+                <div class="space-y-6">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">Set up in 10 minutes</h3>
+                            <p class="text-white/80 text-sm mt-1">Simple wizard walks you through configuration</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">No technical skills needed</h3>
+                            <p class="text-white/80 text-sm mt-1">Just answer questions about your business</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">Test with a real call</h3>
+                            <p class="text-white/80 text-sm mt-1">Call your AI agent to hear how it sounds</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">Cancel anytime</h3>
+                            <p class="text-white/80 text-sm mt-1">No contracts, no commitment</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('signupForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+        const errorMsg = document.getElementById('errorMsg');
+
+        function setLoading(loading) {
+            submitBtn.disabled = loading;
+            btnText.textContent = loading ? 'Creating account...' : 'Create account';
+            spinner.classList.toggle('hidden', !loading);
+            submitBtn.classList.toggle('opacity-75', loading);
+        }
+
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.classList.remove('hidden');
+        }
+
+        function hideError() {
+            errorMsg.classList.add('hidden');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+            setLoading(true);
+
+            const data = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                business_name: document.getElementById('businessName').value,
+                industry: document.getElementById('industry').value
+            };
+
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.detail || 'Something went wrong');
+                }
+
+                // Use redirect URL from API (Stripe checkout or onboarding)
+                window.location.href = result.redirect || `/onboarding?business_id=${result.business_id}`;
+
+            } catch (error) {
+                showError(error.message);
+                setLoading(false);
+            }
+        });
+    </script>
+</body>
+</html>

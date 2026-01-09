@@ -445,7 +445,7 @@ async def stripe_checkout(business_id: str, tier: str = "starter", request: Requ
     if not STRIPE_SECRET_KEY:
         return {"success": True, "url": f"/dashboard?business_id={business_id}"}
 
-    prices = {"starter": 29700, "professional": 49700, "enterprise": 99700}
+    prices = {"starter": 4900, "professional": 9900, "business": 19900}
 
     checkout = stripe.checkout.Session.create(
         customer=business.get("stripe_customer_id"),
@@ -552,9 +552,9 @@ async def vapi_webhook(request: Request):
 async def pricing():
     return {
         "tiers": [
-            {"name": "Starter", "price": 297, "features": ["1 AI Agent", "500 min/mo", "Appointment booking", "Email notifications"]},
-            {"name": "Professional", "price": 497, "popular": True, "features": ["3 AI Agents", "2,000 min/mo", "SMS notifications", "CRM integrations", "Custom voice"]},
-            {"name": "Enterprise", "price": 997, "features": ["Unlimited Agents", "10,000 min/mo", "Multi-location", "API access", "White-label", "24/7 support"]}
+            {"name": "Starter", "price": 49, "minutes": 100, "features": ["1 AI Agent", "100 min/mo", "Appointment booking", "Email notifications", "Call recordings"]},
+            {"name": "Professional", "price": 99, "minutes": 300, "popular": True, "features": ["Everything in Starter", "300 min/mo", "SMS notifications", "Custom AI voice", "Emergency dispatch", "Priority support"]},
+            {"name": "Business", "price": 199, "minutes": 1000, "features": ["Everything in Professional", "1,000 min/mo", "Multiple phone numbers", "CRM integrations", "API access", "Dedicated account manager"]}
         ]
     }
 

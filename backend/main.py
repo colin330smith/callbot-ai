@@ -70,6 +70,13 @@ class OnboardingData(BaseModel):
     faqs: list[dict] = []
     voice: str = "rachel"
     greeting: Optional[str] = None
+    # Call handling options
+    call_mode: str = "forwarding"  # "forwarding" or "takeover"
+    rings_before_ai: int = 3
+    # Emergency dispatch
+    emergency_dispatch: bool = False
+    oncall_phones: Optional[str] = None
+    emergency_keywords: Optional[str] = None
 
 # Helpers
 def hash_password(password: str) -> str:
@@ -228,45 +235,107 @@ async def get_calls(business_id: str, request: Request):
 
     return {"calls": [c for c in _calls if c.get("business_id") == business_id]}
 
-@app.post("/api/onboarding/{business_id}/complete")
-async def complete_onboarding(business_id: str, data: OnboardingData, request: Request):
+@app.post("/api/onboarding/{business_id}/step")
+async def save_onboarding_step(business_id: str, request: Request):
+    """Save data from each onboarding step"""
     user = await require_auth(request)
     business = _businesses.get(business_id)
     if not business or business["user_id"] != user["id"]:
         raise HTTPException(status_code=404, detail="Business not found")
 
+    body = await request.json()
+    step = body.get("step")
+    data = body.get("data", {})
+
+    # Store step data in business record
+    if not business.get("onboarding_data"):
+        business["onboarding_data"] = {}
+
+    for key, value in data.items():
+        business["onboarding_data"][key] = value
+
+    return {"success": True, "step": step}
+
+
+@app.post("/api/onboarding/{business_id}/complete")
+async def complete_onboarding(business_id: str, request: Request):
+    user = await require_auth(request)
+    business = _businesses.get(business_id)
+    if not business or business["user_id"] != user["id"]:
+        raise HTTPException(status_code=404, detail="Business not found")
+
+    # Get stored onboarding data
+    data = business.get("onboarding_data", {})
+
     # Update business with onboarding data
-    business["name"] = data.business_name
-    business["industry"] = data.industry
-    business["phone"] = data.phone
-    business["service_area"] = data.service_area
-    business["services"] = ", ".join(data.services) if data.services else ""
-    business["pricing"] = data.pricing
-    business["business_hours"] = data.business_hours or "Mon-Fri 9am-5pm"
-    business["faqs"] = data.faqs
+    business["name"] = data.get("name", business.get("name", ""))
+    business["industry"] = data.get("industry", "")
+    business["phone"] = data.get("phone", "")
+    business["service_area"] = data.get("service_area", "")
+    services = data.get("services", "")
+    business["services"] = services if isinstance(services, str) else ", ".join(services) if services else ""
+    business["pricing"] = data.get("pricing", "")
+    business["business_hours"] = data.get("business_hours", "Mon-Fri 9am-5pm")
+    business["faqs"] = data.get("faqs", [])
+    # Call handling settings
+    business["call_mode"] = data.get("call_mode", "forwarding")
+    business["rings_before_ai"] = data.get("rings_before_ai", 3)
+    business["emergency_dispatch"] = data.get("emergency_dispatch", False)
+    business["oncall_phones"] = data.get("oncall_phones", "")
+    business["emergency_keywords"] = data.get("emergency_keywords", "")
 
     # Build comprehensive AI system prompt
-    services_text = ", ".join(data.services) if data.services else "various services"
+    services_list = business["services"].split(", ") if business["services"] else []
+    services_text = ", ".join(services_list) if services_list else "various services"
 
     faqs_text = ""
-    if data.faqs:
+    faqs = business.get("faqs", [])
+    if faqs:
         faqs_text = "\n\nFrequently Asked Questions you should know:\n"
-        for faq in data.faqs:
+        for faq in faqs:
             faqs_text += f"Q: {faq.get('question', '')}\nA: {faq.get('answer', '')}\n"
 
-    system_prompt = f"""You are a professional AI phone receptionist for {data.business_name}, a {data.industry} business.
+    # Emergency dispatch instructions
+    emergency_text = ""
+    if business["emergency_dispatch"] and business["emergency_keywords"]:
+        keywords = [k.strip() for k in business["emergency_keywords"].split(",")]
+        emergency_text = f"""
+
+EMERGENCY DISPATCH MODE (CRITICAL):
+If the caller mentions any of these keywords: {', '.join(keywords)}
+You MUST:
+1. Stay calm and reassure the caller that help is on the way
+2. Keep them on the line
+3. Use the dispatchEmergency function to alert on-call staff
+4. Collect details: nature of emergency, their location/address, any safety concerns
+5. Keep the caller engaged and informed while waiting for callback from on-call staff"""
+
+    # Call mode description
+    call_mode_text = ""
+    if business["call_mode"] == "forwarding":
+        call_mode_text = f"\n\nCALL MODE: Call Forwarding - You answer calls that the business owner doesn't pick up after {business['rings_before_ai']} rings."
+    else:
+        call_mode_text = "\n\nCALL MODE: Full Takeover - You handle ALL incoming calls directly."
+
+    business_name = business["name"]
+    industry = business["industry"]
+    service_area = business.get("service_area", "Local area")
+    business_hours = business.get("business_hours", "Mon-Fri 9am-5pm")
+    pricing = business.get("pricing", "")
+
+    system_prompt = f"""You are a professional AI phone receptionist for {business_name}, a {industry} business.
 
 BUSINESS INFORMATION:
-- Business Name: {data.business_name}
-- Industry: {data.industry}
-- Service Area: {data.service_area or 'Local area'}
-- Business Hours: {data.business_hours or 'Mon-Fri 9am-5pm'}
+- Business Name: {business_name}
+- Industry: {industry}
+- Service Area: {service_area or 'Local area'}
+- Business Hours: {business_hours or 'Mon-Fri 9am-5pm'}
 
 SERVICES OFFERED:
 {services_text}
 
-{f"PRICING INFORMATION: {data.pricing}" if data.pricing else ""}
-{faqs_text}
+{f"PRICING INFORMATION: {pricing}" if pricing else ""}
+{faqs_text}{call_mode_text}{emergency_text}
 
 YOUR RESPONSIBILITIES:
 1. Answer calls professionally and warmly
@@ -286,7 +355,8 @@ Then confirm the details and let them know they'll receive a confirmation.
 
 If you don't know something specific, offer to have someone call them back with more details."""
 
-    greeting = data.greeting or f"Hello! Thank you for calling {data.business_name}. How can I help you today?"
+    greeting = data.get("greeting") or f"Hello! Thank you for calling {business_name}. How can I help you today?"
+    voice = data.get("agent_voice", "rachel")
 
     # Create Vapi assistant with full business context
     phone_number = None
@@ -299,8 +369,8 @@ If you don't know something specific, offer to have someone call them back with 
                     "https://api.vapi.ai/assistant",
                     headers={"Authorization": f"Bearer {VAPI_API_KEY}"},
                     json={
-                        "name": f"{data.business_name} AI Receptionist",
-                        "voice": {"voiceId": data.voice, "provider": "11labs"},
+                        "name": f"{business_name} AI Receptionist",
+                        "voice": {"voiceId": voice, "provider": "11labs"},
                         "model": {
                             "provider": "openai",
                             "model": "gpt-4-turbo-preview",
@@ -322,6 +392,21 @@ If you don't know something specific, offer to have someone call them back with 
                                         "notes": {"type": "string", "description": "Any additional notes"}
                                     },
                                     "required": ["customer_name", "phone_number", "service_type", "preferred_date"]
+                                }
+                            },
+                            {
+                                "name": "dispatchEmergency",
+                                "description": "Alert on-call staff for emergency situations. Use this when caller mentions emergency keywords like flooding, no heat, urgent, etc.",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "caller_name": {"type": "string", "description": "Caller's name"},
+                                        "caller_phone": {"type": "string", "description": "Caller's phone number"},
+                                        "emergency_type": {"type": "string", "description": "Type of emergency"},
+                                        "location": {"type": "string", "description": "Location/address of emergency"},
+                                        "details": {"type": "string", "description": "Additional details about the emergency"}
+                                    },
+                                    "required": ["caller_phone", "emergency_type", "details"]
                                 }
                             }
                         ]
@@ -423,6 +508,40 @@ async def vapi_webhook(request: Request):
                         "created_at": datetime.utcnow().isoformat()
                     })
                     return {"result": f"Appointment booked! Reference: {appt_id[:12]}"}
+
+            elif func.get("name") == "dispatchEmergency":
+                params = func.get("parameters", {})
+                assistant_id = body.get("call", {}).get("assistantId")
+                business = next((b for b in _businesses.values() if b.get("vapi_assistant_id") == assistant_id), None)
+                if business and business.get("emergency_dispatch"):
+                    # Log the emergency
+                    emergency_id = f"emg_{secrets.token_hex(8)}"
+                    oncall_phones = business.get("oncall_phones", "")
+
+                    # In production, this would trigger actual calls/SMS to on-call staff
+                    # For now, we log and simulate the dispatch
+                    print(f"EMERGENCY DISPATCH: {emergency_id}")
+                    print(f"  Business: {business['name']}")
+                    print(f"  Caller: {params.get('caller_phone')}")
+                    print(f"  Type: {params.get('emergency_type')}")
+                    print(f"  Details: {params.get('details')}")
+                    print(f"  Dispatching to: {oncall_phones}")
+
+                    # Store emergency record
+                    _calls.append({
+                        "id": emergency_id,
+                        "business_id": business["id"],
+                        "caller_phone": params.get("caller_phone"),
+                        "type": "emergency",
+                        "emergency_type": params.get("emergency_type"),
+                        "location": params.get("location"),
+                        "details": params.get("details"),
+                        "dispatched_to": oncall_phones,
+                        "status": "dispatched",
+                        "created_at": datetime.utcnow().isoformat()
+                    })
+
+                    return {"result": f"Emergency dispatch initiated! Our on-call team has been alerted and will call back shortly. Reference: {emergency_id[:12]}"}
 
         return {"status": "ok"}
     except Exception as e:

@@ -3,228 +3,1387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | CallBot AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <title>Dashboard | CallAlly</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
-                    colors: {
-                        primary: {
-                            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
-                            400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
-                            800: '#3730a3', 900: '#312e81',
-                        }
-                    }
-                }
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --primary-light: #a78bfa;
+            --primary-50: #f5f3ff;
+            --primary-100: #ede9fe;
+            --text-primary: #1e1b4b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --bg-white: #ffffff;
+            --bg-gray: #f8fafc;
+            --bg-dark: #f1f5f9;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gray);
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            background: var(--bg-gray);
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-50);
+            color: var(--primary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-email {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .sign-out-btn {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .sign-out-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            padding: 8px;
+            border-radius: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg-white);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-gray);
+        }
+
+        /* Status Banner */
+        .status-banner {
+            background: var(--success-light);
+            border: 1px solid #a7f3d0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .status-banner.inactive {
+            background: var(--warning-light);
+            border-color: #fde68a;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-dot {
+            position: relative;
+            width: 12px;
+            height: 12px;
+        }
+
+        .status-dot-inner {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+
+        .status-dot-ping {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes ping {
+            75%, 100% {
+                transform: scale(2);
+                opacity: 0;
             }
         }
-    </script>
-    <style>
-        body { font-family: 'Inter', system-ui, sans-serif; }
-        .tab-active { border-bottom: 2px solid #4f46e5; color: #4f46e5; }
-        audio::-webkit-media-controls-panel { background-color: #f9fafb; }
+
+        .status-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #065f46;
+        }
+
+        .status-phone {
+            font-size: 0.875rem;
+            color: #047857;
+        }
+
+        .status-phone span {
+            font-weight: 600;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon.purple {
+            background: var(--primary-100);
+            color: var(--primary);
+        }
+
+        .stat-icon.blue {
+            background: var(--info-light);
+            color: var(--info);
+        }
+
+        .stat-icon.green {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .stat-icon.amber {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-value.green {
+            color: var(--success);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-gray);
+        }
+
+        th {
+            padding: 12px 24px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        tr:hover td {
+            background: var(--bg-gray);
+        }
+
+        .caller-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .caller-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .caller-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .caller-phone {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .caller-date-mobile {
+            display: none;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: var(--success-light);
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: var(--warning-light);
+            color: #92400e;
+        }
+
+        .badge-default {
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+        }
+
+        .play-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .play-btn:hover {
+            color: var(--primary-dark);
+        }
+
+        .view-link {
+            color: var(--primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Select */
+        select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            background: var(--bg-white);
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-50);
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 64px 24px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            color: var(--text-muted);
+        }
+
+        .empty-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .empty-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Analytics Tab */
+        .time-range-btns {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .range-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .range-btn:hover {
+            background: var(--border);
+        }
+
+        .range-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 24px;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        .chart-container {
+            height: 256px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .summary-stat {
+            background: var(--bg-gray);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .summary-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .summary-value.purple { color: var(--primary); }
+        .summary-value.green { color: var(--success); }
+        .summary-value.blue { color: var(--info); }
+        .summary-value.amber { color: var(--warning); }
+
+        .summary-label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Appointments Tab */
+        .appointment-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .appointment-left {
+            display: flex;
+            gap: 16px;
+        }
+
+        .appointment-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--success-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success);
+            flex-shrink: 0;
+        }
+
+        .appointment-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .appointment-service {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .appointment-meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .appointment-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .appointment-meta-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        .appointment-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .download-btn {
+            padding: 8px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            color: var(--text-secondary);
+            background: var(--bg-gray);
+        }
+
+        /* SMS Tab */
+        .sms-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .sms-stat-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 16px;
+        }
+
+        .sms-stat-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sms-stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .sms-message {
+            display: flex;
+            gap: 16px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .sms-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--info-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--info);
+            flex-shrink: 0;
+        }
+
+        .sms-content {
+            flex: 1;
+        }
+
+        .sms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sms-phone {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .sms-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .sms-body {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .sms-meta {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .sms-type {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Integrations Tab */
+        .integrations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .integration-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 24px;
+        }
+
+        .integration-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .integration-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .integration-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .integration-icon.orange {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+        .integration-icon.purple {
+            background: var(--primary-50);
+            color: var(--primary);
+        }
+
+        .integration-icon.blue {
+            background: var(--info-light);
+            color: var(--info);
+        }
+
+        .integration-icon.green {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .integration-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .integration-type {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .integration-status {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+
+        .integration-status.connected {
+            background: var(--success-light);
+            color: #065f46;
+        }
+
+        .integration-status.disconnected {
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+        }
+
+        .integration-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .integration-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: var(--bg-white);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .integration-btn:hover {
+            background: var(--bg-gray);
+        }
+
+        .webhook-section {
+            margin-top: 32px;
+            background: var(--bg-white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 24px;
+        }
+
+        .webhook-title {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .webhook-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .webhook-input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .webhook-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--bg-gray);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-family: 'SF Mono', Monaco, monospace;
+            color: var(--text-secondary);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(30, 27, 75, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 16px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-white);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 480px;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal.large {
+            max-width: 640px;
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+        }
+
+        .modal-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .modal-close {
+            padding: 4px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .modal-close:hover {
+            color: var(--text-secondary);
+            background: var(--bg-gray);
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            background: var(--bg-gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-50);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Call Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-item {
+            background: var(--bg-gray);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .detail-label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .detail-value.success {
+            color: var(--success);
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section-title {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .detail-section-content {
+            background: var(--bg-gray);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .detail-section-content audio {
+            width: 100%;
+        }
+
+        .detail-section-content.transcript {
+            max-height: 240px;
+            overflow-y: auto;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .integrations-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .sms-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                display: none;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            .user-email {
+                display: none;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .stat-card {
+                padding: 16px;
+            }
+            .stat-icon {
+                width: 40px;
+                height: 40px;
+            }
+            .stat-value {
+                font-size: 1.25rem;
+            }
+            .page-header {
+                flex-direction: column;
+            }
+            .header-actions {
+                width: 100%;
+            }
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+            .integrations-grid {
+                grid-template-columns: 1fr;
+            }
+            .caller-date-mobile {
+                display: block;
+            }
+            .table-hide-mobile {
+                display: none;
+            }
+            th, td {
+                padding: 12px 16px;
+            }
+            .summary-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-white);
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .mobile-menu-item {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .mobile-menu-item:hover {
+            background: var(--bg-gray);
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen antialiased">
+<body>
     <!-- Top Navigation -->
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-4 lg:space-x-8">
-                    <a href="/" class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                            </svg>
-                        </div>
-                        <span class="text-xl font-semibold text-gray-900 hidden sm:block">CallBot AI</span>
-                    </a>
-                    <div class="hidden md:flex items-center space-x-1">
-                        <button onclick="switchTab('dashboard')" id="tabDashboard" class="px-3 py-2 rounded-lg text-sm font-medium text-primary-600 bg-primary-50">Dashboard</button>
-                        <button onclick="switchTab('analytics')" id="tabAnalytics" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100">Analytics</button>
-                        <button onclick="switchTab('appointments')" id="tabAppointments" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100">Appointments</button>
-                        <button onclick="switchTab('sms')" id="tabSms" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100">SMS</button>
-                        <button onclick="switchTab('integrations')" id="tabIntegrations" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100">Integrations</button>
-                        <button onclick="openSettings()" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100">Settings</button>
-                        <a href="/api/stripe/portal" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100">Billing</a>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2 sm:space-x-4">
-                    <span id="userEmail" class="hidden lg:block text-sm text-gray-500 truncate max-w-[150px]"></span>
-                    <button onclick="logout()" class="text-sm font-medium text-gray-600 hover:text-gray-900">Sign out</button>
-                    <!-- Mobile menu button -->
-                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
-                    </button>
+                    </div>
+                    <span class="logo-text">CallAlly</span>
+                </a>
+                <div class="nav-tabs">
+                    <button onclick="switchTab('dashboard')" id="tabDashboard" class="nav-tab active">Dashboard</button>
+                    <button onclick="switchTab('analytics')" id="tabAnalytics" class="nav-tab">Analytics</button>
+                    <button onclick="switchTab('appointments')" id="tabAppointments" class="nav-tab">Appointments</button>
+                    <button onclick="switchTab('sms')" id="tabSms" class="nav-tab">SMS</button>
+                    <button onclick="switchTab('integrations')" id="tabIntegrations" class="nav-tab">Integrations</button>
+                    <button onclick="openSettings()" class="nav-tab">Settings</button>
+                    <a href="/api/stripe/portal" class="nav-tab">Billing</a>
                 </div>
             </div>
-            <!-- Mobile menu -->
-            <div id="mobileMenu" class="hidden md:hidden pb-4">
-                <div class="flex flex-col space-y-1">
-                    <button onclick="switchTab('dashboard'); toggleMobileMenu()" class="px-3 py-2 rounded-lg text-sm font-medium text-left text-gray-600 hover:bg-gray-100">Dashboard</button>
-                    <button onclick="switchTab('analytics'); toggleMobileMenu()" class="px-3 py-2 rounded-lg text-sm font-medium text-left text-gray-600 hover:bg-gray-100">Analytics</button>
-                    <button onclick="switchTab('appointments'); toggleMobileMenu()" class="px-3 py-2 rounded-lg text-sm font-medium text-left text-gray-600 hover:bg-gray-100">Appointments</button>
-                    <button onclick="switchTab('sms'); toggleMobileMenu()" class="px-3 py-2 rounded-lg text-sm font-medium text-left text-gray-600 hover:bg-gray-100">SMS</button>
-                    <button onclick="switchTab('integrations'); toggleMobileMenu()" class="px-3 py-2 rounded-lg text-sm font-medium text-left text-gray-600 hover:bg-gray-100">Integrations</button>
-                    <button onclick="openSettings(); toggleMobileMenu()" class="px-3 py-2 rounded-lg text-sm font-medium text-left text-gray-600 hover:bg-gray-100">Settings</button>
-                    <a href="/api/stripe/portal" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100">Billing</a>
-                </div>
+            <div class="nav-right">
+                <span id="userEmail" class="user-email"></span>
+                <button onclick="logout()" class="sign-out-btn">Sign out</button>
+                <button onclick="toggleMobileMenu()" class="mobile-menu-btn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
             </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="mobile-menu">
+            <button onclick="switchTab('dashboard'); toggleMobileMenu()" class="mobile-menu-item">Dashboard</button>
+            <button onclick="switchTab('analytics'); toggleMobileMenu()" class="mobile-menu-item">Analytics</button>
+            <button onclick="switchTab('appointments'); toggleMobileMenu()" class="mobile-menu-item">Appointments</button>
+            <button onclick="switchTab('sms'); toggleMobileMenu()" class="mobile-menu-item">SMS</button>
+            <button onclick="switchTab('integrations'); toggleMobileMenu()" class="mobile-menu-item">Integrations</button>
+            <button onclick="openSettings(); toggleMobileMenu()" class="mobile-menu-item">Settings</button>
+            <a href="/api/stripe/portal" class="mobile-menu-item">Billing</a>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <main class="main-content">
         <!-- Dashboard Tab -->
         <div id="dashboardContent">
-            <!-- Page Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-                <div class="min-w-0 flex-1">
-                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900 truncate" id="businessName">Your Business</h1>
-                    <p class="mt-1 text-sm text-gray-500" id="phoneNumber">Loading...</p>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title" id="businessName">Your Business</h1>
+                    <p class="page-subtitle" id="phoneNumber">Loading...</p>
                 </div>
-                <div class="flex flex-wrap gap-2 sm:gap-3">
-                    <button onclick="exportCSV()" class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="header-actions">
+                    <button onclick="exportCSV()" class="btn btn-secondary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
-                        <span class="hidden sm:inline">Export CSV</span>
-                        <span class="sm:hidden">CSV</span>
+                        Export CSV
                     </button>
-                    <button onclick="openSettings()" class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <svg class="w-4 h-4 sm:mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button onclick="openSettings()" class="btn btn-secondary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                        <span class="hidden sm:inline">Settings</span>
+                        Settings
                     </button>
-                    <button onclick="openTestCall()" class="inline-flex items-center px-3 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <svg class="w-4 h-4 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button onclick="openTestCall()" class="btn btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
-                        <span class="hidden sm:inline">Test Call</span>
-                        <span class="sm:hidden">Call</span>
+                        Test Call
                     </button>
                 </div>
             </div>
 
             <!-- Status Banner -->
-            <div id="statusBanner" class="mb-6 rounded-xl border border-green-200 bg-green-50 p-3 sm:p-4">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <div class="flex items-center space-x-3">
-                        <div class="flex-shrink-0">
-                            <span class="relative flex h-3 w-3">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                            </span>
-                        </div>
-                        <p class="text-sm font-medium text-green-800">Your AI agent is active and ready to take calls</p>
+            <div id="statusBanner" class="status-banner">
+                <div class="status-left">
+                    <div class="status-dot">
+                        <span class="status-dot-ping"></span>
+                        <span class="status-dot-inner"></span>
                     </div>
-                    <div class="text-sm text-green-700 ml-6 sm:ml-0">
-                        <span class="font-medium">Phone:</span> <span id="agentPhone" class="font-mono">Loading...</span>
-                    </div>
+                    <span class="status-text">Your AI agent is active and ready to take calls</span>
+                </div>
+                <div class="status-phone">
+                    Phone: <span id="agentPhone">Loading...</span>
                 </div>
             </div>
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-8">
-                <div class="bg-white overflow-hidden rounded-xl border border-gray-200 shadow-sm">
-                    <div class="p-4 sm:p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-3 sm:ml-4 flex-1 min-w-0">
-                                <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">Total Calls</p>
-                                <p class="text-xl sm:text-2xl font-bold text-gray-900" id="statTotalCalls">0</p>
-                            </div>
-                        </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Calls</div>
+                        <div class="stat-value" id="statTotalCalls">0</div>
                     </div>
                 </div>
-
-                <div class="bg-white overflow-hidden rounded-xl border border-gray-200 shadow-sm">
-                    <div class="p-4 sm:p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-3 sm:ml-4 flex-1 min-w-0">
-                                <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">Today</p>
-                                <p class="text-xl sm:text-2xl font-bold text-gray-900" id="statToday">0</p>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Today</div>
+                        <div class="stat-value" id="statToday">0</div>
                     </div>
                 </div>
-
-                <div class="bg-white overflow-hidden rounded-xl border border-gray-200 shadow-sm">
-                    <div class="p-4 sm:p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-3 sm:ml-4 flex-1 min-w-0">
-                                <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">Appointments</p>
-                                <p class="text-xl sm:text-2xl font-bold text-green-600" id="statAppointments">0</p>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Appointments</div>
+                        <div class="stat-value green" id="statAppointments">0</div>
                     </div>
                 </div>
-
-                <div class="bg-white overflow-hidden rounded-xl border border-gray-200 shadow-sm">
-                    <div class="p-4 sm:p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-3 sm:ml-4 flex-1 min-w-0">
-                                <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">Avg Duration</p>
-                                <p class="text-xl sm:text-2xl font-bold text-gray-900" id="statDuration">0s</p>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon amber">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Avg Duration</div>
+                        <div class="stat-value" id="statDuration">0s</div>
                     </div>
                 </div>
             </div>
 
             <!-- Recent Calls Table -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <h2 class="text-lg font-semibold text-gray-900">Recent Calls</h2>
-                    <div class="flex items-center space-x-2">
-                        <select id="callFilter" onchange="filterCalls()" class="text-sm border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
-                            <option value="all">All Calls</option>
-                            <option value="booked">With Appointments</option>
-                            <option value="callback">Callback Requested</option>
-                        </select>
-                    </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Calls</h2>
+                    <select id="callFilter" onchange="filterCalls()">
+                        <option value="all">All Calls</option>
+                        <option value="booked">With Appointments</option>
+                        <option value="callback">Callback Requested</option>
+                    </select>
                 </div>
-                <div id="callsList" class="overflow-x-auto">
-                    <div class="p-12 text-center">
-                        <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div id="callsList" class="table-container">
+                    <div class="empty-state">
+                        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
-                        <p class="mt-4 text-sm text-gray-500">Loading calls...</p>
+                        <p class="empty-text">Loading calls...</p>
                     </div>
                 </div>
             </div>
@@ -232,72 +1391,68 @@
 
         <!-- Analytics Tab -->
         <div id="analyticsContent" class="hidden">
-            <div class="mb-6 sm:mb-8">
-                <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Analytics</h1>
-                <p class="mt-1 text-sm text-gray-500">Insights into your call performance</p>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Analytics</h1>
+                    <p class="page-subtitle">Insights into your call performance</p>
+                </div>
             </div>
 
-            <!-- Time Range Selector -->
-            <div class="mb-6 flex flex-wrap gap-2">
-                <button onclick="setTimeRange('7d')" id="range7d" class="px-4 py-2 rounded-lg text-sm font-medium bg-primary-600 text-white">7 Days</button>
-                <button onclick="setTimeRange('30d')" id="range30d" class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">30 Days</button>
-                <button onclick="setTimeRange('90d')" id="range90d" class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">90 Days</button>
+            <div class="time-range-btns">
+                <button onclick="setTimeRange('7d')" id="range7d" class="range-btn active">7 Days</button>
+                <button onclick="setTimeRange('30d')" id="range30d" class="range-btn">30 Days</button>
+                <button onclick="setTimeRange('90d')" id="range90d" class="range-btn">90 Days</button>
             </div>
 
-            <!-- Charts Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <!-- Calls Over Time -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Calls Over Time</h3>
-                    <div class="h-64">
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">Calls Over Time</h3>
+                    <div class="chart-container">
                         <canvas id="callsChart"></canvas>
                     </div>
                 </div>
-
-                <!-- Appointment Rate -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Appointment Conversion</h3>
-                    <div class="h-64 flex items-center justify-center">
+                <div class="chart-card">
+                    <h3 class="chart-title">Appointment Conversion</h3>
+                    <div class="chart-container">
                         <canvas id="conversionChart"></canvas>
                     </div>
                 </div>
-
-                <!-- Call Duration Distribution -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Call Duration Distribution</h3>
-                    <div class="h-64">
+                <div class="chart-card">
+                    <h3 class="chart-title">Call Duration Distribution</h3>
+                    <div class="chart-container">
                         <canvas id="durationChart"></canvas>
                     </div>
                 </div>
-
-                <!-- Peak Hours -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Peak Call Hours</h3>
-                    <div class="h-64">
+                <div class="chart-card">
+                    <h3 class="chart-title">Peak Call Hours</h3>
+                    <div class="chart-container">
                         <canvas id="hoursChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Summary Stats -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Performance Summary</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="analyticsStats">
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <p class="text-3xl font-bold text-primary-600" id="analyticsTotalCalls">0</p>
-                        <p class="text-sm text-gray-500 mt-1">Total Calls</p>
-                    </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <p class="text-3xl font-bold text-green-600" id="analyticsConversionRate">0%</p>
-                        <p class="text-sm text-gray-500 mt-1">Conversion Rate</p>
-                    </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <p class="text-3xl font-bold text-blue-600" id="analyticsAvgDuration">0s</p>
-                        <p class="text-sm text-gray-500 mt-1">Avg Duration</p>
-                    </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <p class="text-3xl font-bold text-amber-600" id="analyticsPeakHour">-</p>
-                        <p class="text-sm text-gray-500 mt-1">Peak Hour</p>
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Performance Summary</h2>
+                </div>
+                <div class="card-body">
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <div class="summary-value purple" id="analyticsTotalCalls">0</div>
+                            <div class="summary-label">Total Calls</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-value green" id="analyticsConversionRate">0%</div>
+                            <div class="summary-label">Conversion Rate</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-value blue" id="analyticsAvgDuration">0s</div>
+                            <div class="summary-label">Avg Duration</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-value amber" id="analyticsPeakHour">-</div>
+                            <div class="summary-label">Peak Hour</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -305,75 +1460,79 @@
 
         <!-- Appointments Tab -->
         <div id="appointmentsContent" class="hidden">
-            <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="page-header">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Appointments</h1>
-                    <p class="mt-1 text-sm text-gray-500">Manage your booked appointments</p>
+                    <h1 class="page-title">Appointments</h1>
+                    <p class="page-subtitle">Manage your booked appointments</p>
                 </div>
-                <button onclick="exportAppointmentsICS()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    Export to Calendar
-                </button>
+                <div class="header-actions">
+                    <button onclick="exportAppointmentsICS()" class="btn btn-secondary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Export to Calendar
+                    </button>
+                </div>
             </div>
 
-            <div id="appointmentsList" class="space-y-4">
-                <div class="p-12 text-center bg-white rounded-xl border border-gray-200">
-                    <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <p class="mt-4 text-sm text-gray-500">Loading appointments...</p>
+            <div id="appointmentsList">
+                <div class="card">
+                    <div class="empty-state">
+                        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="empty-text">Loading appointments...</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- SMS Tab -->
         <div id="smsContent" class="hidden">
-            <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="page-header">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900">SMS Messages</h1>
-                    <p class="mt-1 text-sm text-gray-500">Missed call text-backs and follow-up messages</p>
+                    <h1 class="page-title">SMS Messages</h1>
+                    <p class="page-subtitle">Missed call text-backs and follow-up messages</p>
                 </div>
-                <button onclick="openSendSms()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    Send SMS
-                </button>
-            </div>
-
-            <!-- SMS Stats -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-xl border border-gray-200 p-4">
-                    <p class="text-xs font-medium text-gray-500 uppercase">Sent Today</p>
-                    <p class="mt-1 text-2xl font-bold text-gray-900" id="smsSentToday">0</p>
-                </div>
-                <div class="bg-white rounded-xl border border-gray-200 p-4">
-                    <p class="text-xs font-medium text-gray-500 uppercase">Delivered</p>
-                    <p class="mt-1 text-2xl font-bold text-green-600" id="smsDelivered">0</p>
-                </div>
-                <div class="bg-white rounded-xl border border-gray-200 p-4">
-                    <p class="text-xs font-medium text-gray-500 uppercase">Response Rate</p>
-                    <p class="mt-1 text-2xl font-bold text-blue-600" id="smsResponseRate">0%</p>
-                </div>
-                <div class="bg-white rounded-xl border border-gray-200 p-4">
-                    <p class="text-xs font-medium text-gray-500 uppercase">Recovered Leads</p>
-                    <p class="mt-1 text-2xl font-bold text-amber-600" id="smsRecovered">0</p>
+                <div class="header-actions">
+                    <button onclick="openSendSms()" class="btn btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Send SMS
+                    </button>
                 </div>
             </div>
 
-            <!-- SMS List -->
-            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900">Recent Messages</h3>
+            <div class="sms-stats">
+                <div class="sms-stat-card">
+                    <div class="sms-stat-label">Sent Today</div>
+                    <div class="sms-stat-value" id="smsSentToday">0</div>
                 </div>
-                <div id="smsList" class="divide-y divide-gray-200">
-                    <div class="p-12 text-center">
-                        <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="sms-stat-card">
+                    <div class="sms-stat-label">Delivered</div>
+                    <div class="sms-stat-value" style="color: var(--success)" id="smsDelivered">0</div>
+                </div>
+                <div class="sms-stat-card">
+                    <div class="sms-stat-label">Response Rate</div>
+                    <div class="sms-stat-value" style="color: var(--info)" id="smsResponseRate">0%</div>
+                </div>
+                <div class="sms-stat-card">
+                    <div class="sms-stat-label">Recovered Leads</div>
+                    <div class="sms-stat-value" style="color: var(--warning)" id="smsRecovered">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Messages</h2>
+                </div>
+                <div id="smsList">
+                    <div class="empty-state">
+                        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                         </svg>
-                        <p class="mt-4 text-sm text-gray-500">No SMS messages yet</p>
+                        <p class="empty-text">No SMS messages yet</p>
                     </div>
                 </div>
             </div>
@@ -381,205 +1540,209 @@
 
         <!-- Integrations Tab -->
         <div id="integrationsContent" class="hidden">
-            <div class="mb-6 sm:mb-8">
-                <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Integrations</h1>
-                <p class="mt-1 text-sm text-gray-500">Connect your favorite tools and CRMs</p>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Integrations</h1>
+                    <p class="page-subtitle">Connect your favorite tools and CRMs</p>
+                </div>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="integrations-grid">
                 <!-- GoHighLevel -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <span class="text-orange-600 font-bold text-sm">GHL</span>
-                            </div>
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-icon orange">GHL</div>
                             <div>
-                                <h3 class="font-semibold text-gray-900">GoHighLevel</h3>
-                                <p class="text-xs text-gray-500">CRM & Marketing</p>
+                                <div class="integration-name">GoHighLevel</div>
+                                <div class="integration-type">CRM & Marketing</div>
                             </div>
                         </div>
-                        <span id="ghlStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">Not Connected</span>
+                        <span id="ghlStatus" class="integration-status disconnected">Not Connected</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Sync leads and appointments directly to your GHL account.</p>
-                    <button onclick="connectIntegration('gohighlevel')" class="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Connect</button>
+                    <p class="integration-desc">Sync leads and appointments directly to your GHL account.</p>
+                    <button onclick="connectIntegration('gohighlevel')" class="integration-btn">Connect</button>
                 </div>
 
                 <!-- HubSpot -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M18.16 7.86v4.7a2.49 2.49 0 0 1-1.32-.54l-3.45-2.73a.49.49 0 0 0-.7.1L9.71 13.7a1.14 1.14 0 0 1-.93.46h-.05a1.14 1.14 0 0 1-.93-.5L5.38 10a.5.5 0 0 0-.84.54l2.42 3.67a2.14 2.14 0 0 0 1.78.96h.1a2.15 2.15 0 0 0 1.75-.86l2.67-3.5 2.95 2.33a3.5 3.5 0 0 0 1.95.86v4.8a1.8 1.8 0 1 0 1.2 0V7.86a1.8 1.8 0 1 0-1.2 0z"/></svg>
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-icon orange">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.16 7.86v4.7a2.49 2.49 0 0 1-1.32-.54l-3.45-2.73a.49.49 0 0 0-.7.1L9.71 13.7a1.14 1.14 0 0 1-.93.46h-.05a1.14 1.14 0 0 1-.93-.5L5.38 10a.5.5 0 0 0-.84.54l2.42 3.67a2.14 2.14 0 0 0 1.78.96h.1a2.15 2.15 0 0 0 1.75-.86l2.67-3.5 2.95 2.33a3.5 3.5 0 0 0 1.95.86v4.8a1.8 1.8 0 1 0 1.2 0V7.86a1.8 1.8 0 1 0-1.2 0z"/></svg>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-gray-900">HubSpot</h3>
-                                <p class="text-xs text-gray-500">CRM & Sales</p>
+                                <div class="integration-name">HubSpot</div>
+                                <div class="integration-type">CRM & Sales</div>
                             </div>
                         </div>
-                        <span id="hubspotStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">Not Connected</span>
+                        <span id="hubspotStatus" class="integration-status disconnected">Not Connected</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Create contacts and deals automatically in HubSpot.</p>
-                    <button onclick="connectIntegration('hubspot')" class="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Connect</button>
+                    <p class="integration-desc">Create contacts and deals automatically in HubSpot.</p>
+                    <button onclick="connectIntegration('hubspot')" class="integration-btn">Connect</button>
                 </div>
 
                 <!-- Zapier -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <span class="text-orange-600 font-bold text-sm">⚡</span>
-                            </div>
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-icon orange">⚡</div>
                             <div>
-                                <h3 class="font-semibold text-gray-900">Zapier</h3>
-                                <p class="text-xs text-gray-500">5,000+ Apps</p>
+                                <div class="integration-name">Zapier</div>
+                                <div class="integration-type">5,000+ Apps</div>
                             </div>
                         </div>
-                        <span id="zapierStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">Not Connected</span>
+                        <span id="zapierStatus" class="integration-status disconnected">Not Connected</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Connect to thousands of apps via Zapier webhooks.</p>
-                    <button onclick="connectIntegration('zapier')" class="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Connect</button>
+                    <p class="integration-desc">Connect to thousands of apps via Zapier webhooks.</p>
+                    <button onclick="connectIntegration('zapier')" class="integration-btn">Connect</button>
                 </div>
 
                 <!-- Slack -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <span class="text-purple-600 font-bold text-sm">#</span>
-                            </div>
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-icon purple">#</div>
                             <div>
-                                <h3 class="font-semibold text-gray-900">Slack</h3>
-                                <p class="text-xs text-gray-500">Notifications</p>
+                                <div class="integration-name">Slack</div>
+                                <div class="integration-type">Notifications</div>
                             </div>
                         </div>
-                        <span id="slackStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">Not Connected</span>
+                        <span id="slackStatus" class="integration-status disconnected">Not Connected</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Get instant Slack notifications for new leads and calls.</p>
-                    <button onclick="connectIntegration('slack')" class="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Connect</button>
+                    <p class="integration-desc">Get instant Slack notifications for new leads and calls.</p>
+                    <button onclick="connectIntegration('slack')" class="integration-btn">Connect</button>
                 </div>
 
                 <!-- Google Calendar -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-icon blue">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-gray-900">Google Calendar</h3>
-                                <p class="text-xs text-gray-500">Scheduling</p>
+                                <div class="integration-name">Google Calendar</div>
+                                <div class="integration-type">Scheduling</div>
                             </div>
                         </div>
-                        <span id="gcalStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">Not Connected</span>
+                        <span id="gcalStatus" class="integration-status disconnected">Not Connected</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Sync appointments directly to Google Calendar.</p>
-                    <button onclick="connectIntegration('google_calendar')" class="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Connect</button>
+                    <p class="integration-desc">Sync appointments directly to Google Calendar.</p>
+                    <button onclick="connectIntegration('google_calendar')" class="integration-btn">Connect</button>
                 </div>
 
                 <!-- Website Widget -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-icon green">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-gray-900">Website Widget</h3>
-                                <p class="text-xs text-gray-500">Click-to-Call</p>
+                                <div class="integration-name">Website Widget</div>
+                                <div class="integration-type">Click-to-Call</div>
                             </div>
                         </div>
-                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-600">Available</span>
+                        <span class="integration-status connected">Available</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Add a click-to-call button to your website.</p>
-                    <button onclick="showWidgetCode()" class="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Get Embed Code</button>
+                    <p class="integration-desc">Add a click-to-call button to your website.</p>
+                    <button onclick="showWidgetCode()" class="integration-btn">Get Embed Code</button>
                 </div>
             </div>
 
-            <!-- Webhook URL Section -->
-            <div class="mt-8 bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Webhook URL</h3>
-                <p class="text-sm text-gray-600 mb-4">Use this URL to receive real-time events in your applications.</p>
-                <div class="flex items-center space-x-2">
-                    <input type="text" readonly id="webhookUrl" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm font-mono text-gray-700" value="Loading...">
-                    <button onclick="copyWebhookUrl()" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition">Copy</button>
+            <div class="webhook-section">
+                <h3 class="webhook-title">Webhook URL</h3>
+                <p class="webhook-desc">Use this URL to receive real-time events in your applications.</p>
+                <div class="webhook-input-group">
+                    <input type="text" readonly id="webhookUrl" class="webhook-input" value="Loading...">
+                    <button onclick="copyWebhookUrl()" class="btn btn-primary">Copy</button>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Test Call Modal -->
-    <div id="testCallModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900">Make a Test Call</h3>
-                <p class="mt-1 text-sm text-gray-500">We'll call this number and connect them to your AI agent.</p>
+    <div id="testCallModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title">Make a Test Call</h3>
+                    <p class="modal-subtitle">We'll call this number and connect them to your AI agent.</p>
+                </div>
             </div>
-            <div class="px-6 py-5">
-                <label for="testPhone" class="block text-sm font-medium text-gray-700 mb-1.5">Phone number</label>
-                <input type="tel" id="testPhone"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                    placeholder="+1 (555) 123-4567">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="testPhone" class="form-label">Phone number</label>
+                    <input type="tel" id="testPhone" class="form-input" placeholder="+1 (555) 123-4567">
+                </div>
             </div>
-            <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
-                <button onclick="closeTestCall()" class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">Cancel</button>
-                <button onclick="makeTestCall()" class="px-4 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition">Call Now</button>
+            <div class="modal-footer">
+                <button onclick="closeTestCall()" class="btn btn-secondary">Cancel</button>
+                <button onclick="makeTestCall()" class="btn btn-primary">Call Now</button>
             </div>
         </div>
     </div>
 
     <!-- Settings Modal -->
-    <div id="settingsModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full my-8 overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900">Agent Settings</h3>
-                <p class="mt-1 text-sm text-gray-500">Configure how your AI agent handles calls.</p>
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal large">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title">Agent Settings</h3>
+                    <p class="modal-subtitle">Configure how your AI agent handles calls.</p>
+                </div>
+                <button onclick="closeSettings()" class="modal-close">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
-            <div class="px-6 py-5 space-y-5 max-h-[60vh] overflow-y-auto">
-                <div>
-                    <label for="settingAgentName" class="block text-sm font-medium text-gray-700 mb-1.5">Agent Name</label>
-                    <input type="text" id="settingAgentName" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="settingAgentName" class="form-label">Agent Name</label>
+                    <input type="text" id="settingAgentName" class="form-input" placeholder="e.g., Rachel">
                 </div>
-                <div>
-                    <label for="settingServices" class="block text-sm font-medium text-gray-700 mb-1.5">Services</label>
-                    <textarea id="settingServices" rows="3" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none"></textarea>
+                <div class="form-group">
+                    <label for="settingServices" class="form-label">Services</label>
+                    <textarea id="settingServices" class="form-input" rows="3" placeholder="List the services your business offers..."></textarea>
                 </div>
-                <div>
-                    <label for="settingHours" class="block text-sm font-medium text-gray-700 mb-1.5">Business Hours</label>
-                    <textarea id="settingHours" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none"></textarea>
+                <div class="form-group">
+                    <label for="settingHours" class="form-label">Business Hours</label>
+                    <textarea id="settingHours" class="form-input" rows="2" placeholder="e.g., Mon-Fri 9am-5pm, Sat 10am-2pm"></textarea>
                 </div>
-                <div>
-                    <label for="settingFaq" class="block text-sm font-medium text-gray-700 mb-1.5">FAQs</label>
-                    <textarea id="settingFaq" rows="4" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none"></textarea>
+                <div class="form-group">
+                    <label for="settingFaq" class="form-label">FAQs</label>
+                    <textarea id="settingFaq" class="form-input" rows="4" placeholder="Add common questions and answers..."></textarea>
                 </div>
-                <div>
-                    <label for="settingCustom" class="block text-sm font-medium text-gray-700 mb-1.5">Custom Instructions</label>
-                    <textarea id="settingCustom" rows="3" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none"></textarea>
+                <div class="form-group">
+                    <label for="settingCustom" class="form-label">Custom Instructions</label>
+                    <textarea id="settingCustom" class="form-input" rows="3" placeholder="Any special instructions for your AI agent..."></textarea>
                 </div>
-                <div>
-                    <label for="settingEmail" class="block text-sm font-medium text-gray-700 mb-1.5">Notification Email</label>
-                    <input type="email" id="settingEmail" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition">
+                <div class="form-group">
+                    <label for="settingEmail" class="form-label">Notification Email</label>
+                    <input type="email" id="settingEmail" class="form-input" placeholder="your@email.com">
                 </div>
             </div>
-            <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
-                <button onclick="closeSettings()" class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">Cancel</button>
-                <button onclick="saveSettings()" class="px-4 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition">Save Changes</button>
+            <div class="modal-footer">
+                <button onclick="closeSettings()" class="btn btn-secondary">Cancel</button>
+                <button onclick="saveSettings()" class="btn btn-primary">Save Changes</button>
             </div>
         </div>
     </div>
 
     <!-- Call Detail Modal -->
-    <div id="callDetailModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full my-8 overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-900">Call Details</h3>
-                <button onclick="closeCallDetail()" class="text-gray-400 hover:text-gray-600 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div id="callDetailModal" class="modal-overlay">
+        <div class="modal large">
+            <div class="modal-header">
+                <h3 class="modal-title">Call Details</h3>
+                <button onclick="closeCallDetail()" class="modal-close">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
-            <div id="callDetailContent" class="px-6 py-5 max-h-[70vh] overflow-y-auto">
+            <div id="callDetailContent" class="modal-body">
                 <!-- Filled by JS -->
             </div>
         </div>
@@ -597,7 +1760,7 @@
             const data = await response.json();
 
             if (!data.authenticated) {
-                window.location.href = '/signup';
+                window.location.href = '/signup.html';
                 return;
             }
 
@@ -607,7 +1770,7 @@
                 business = data.businesses[0];
 
                 if (business.status === 'onboarding') {
-                    window.location.href = '/onboarding?business_id=' + business.id;
+                    window.location.href = '/onboarding.html?business_id=' + business.id;
                     return;
                 }
 
@@ -620,12 +1783,12 @@
                 loadCalls();
                 loadAppointments();
             } else {
-                window.location.href = '/onboarding';
+                window.location.href = '/onboarding.html';
             }
         }
 
         function toggleMobileMenu() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
+            document.getElementById('mobileMenu').classList.toggle('active');
         }
 
         function switchTab(tab) {
@@ -637,33 +1800,27 @@
             document.getElementById('integrationsContent').classList.add('hidden');
 
             // Reset tab styles
-            const resetClass = 'px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100';
-            const activeClass = 'px-3 py-2 rounded-lg text-sm font-medium text-primary-600 bg-primary-50';
-            document.getElementById('tabDashboard').className = resetClass;
-            document.getElementById('tabAnalytics').className = resetClass;
-            document.getElementById('tabAppointments').className = resetClass;
-            document.getElementById('tabSms').className = resetClass;
-            document.getElementById('tabIntegrations').className = resetClass;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
 
             // Show selected tab
             if (tab === 'dashboard') {
                 document.getElementById('dashboardContent').classList.remove('hidden');
-                document.getElementById('tabDashboard').className = activeClass;
+                document.getElementById('tabDashboard').classList.add('active');
             } else if (tab === 'analytics') {
                 document.getElementById('analyticsContent').classList.remove('hidden');
-                document.getElementById('tabAnalytics').className = activeClass;
+                document.getElementById('tabAnalytics').classList.add('active');
                 initCharts();
             } else if (tab === 'appointments') {
                 document.getElementById('appointmentsContent').classList.remove('hidden');
-                document.getElementById('tabAppointments').className = activeClass;
+                document.getElementById('tabAppointments').classList.add('active');
                 loadAppointments();
             } else if (tab === 'sms') {
                 document.getElementById('smsContent').classList.remove('hidden');
-                document.getElementById('tabSms').className = activeClass;
+                document.getElementById('tabSms').classList.add('active');
                 loadSmsMessages();
             } else if (tab === 'integrations') {
                 document.getElementById('integrationsContent').classList.remove('hidden');
-                document.getElementById('tabIntegrations').className = activeClass;
+                document.getElementById('tabIntegrations').classList.add('active');
                 loadIntegrations();
             }
         }
@@ -712,67 +1869,65 @@
 
             if (callsToRender.length === 0) {
                 container.innerHTML = `
-                    <div class="p-12 text-center">
-                        <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="empty-state">
+                        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
-                        <p class="mt-4 text-sm font-medium text-gray-900">No calls yet</p>
-                        <p class="mt-1 text-sm text-gray-500">When someone calls your AI agent, they'll appear here.</p>
+                        <p class="empty-title">No calls yet</p>
+                        <p class="empty-text">When someone calls your AI agent, they'll appear here.</p>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = `
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table>
+                    <thead>
                         <tr>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Caller</th>
-                            <th scope="col" class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th scope="col" class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recording</th>
-                            <th scope="col" class="relative px-4 sm:px-6 py-3"><span class="sr-only">View</span></th>
+                            <th>Caller</th>
+                            <th class="table-hide-mobile">Date</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th class="table-hide-mobile">Recording</th>
+                            <th></th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody>
                         ${callsToRender.map(call => `
-                            <tr class="hover:bg-gray-50 cursor-pointer transition" onclick="showCallDetail('${call.id}')">
-                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-primary-100 rounded-full flex items-center justify-center">
-                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <tr onclick="showCallDetail('${call.id}')" style="cursor: pointer;">
+                                <td>
+                                    <div class="caller-cell">
+                                        <div class="caller-avatar">
+                                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                             </svg>
                                         </div>
-                                        <div class="ml-3 sm:ml-4">
-                                            <div class="text-sm font-medium text-gray-900">${call.caller_phone || 'Unknown'}</div>
-                                            <div class="sm:hidden text-xs text-gray-500">${formatDate(call.created_at)}</div>
+                                        <div class="caller-info">
+                                            <span class="caller-phone">${call.caller_phone || 'Unknown'}</span>
+                                            <span class="caller-date-mobile">${formatDate(call.created_at)}</span>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(call.created_at)}</td>
-                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">${call.duration || 0}s</td>
-                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                <td class="table-hide-mobile" style="color: var(--text-secondary); font-size: 0.875rem;">${formatDate(call.created_at)}</td>
+                                <td style="color: var(--text-secondary); font-size: 0.875rem;">${call.duration || 0}s</td>
+                                <td>
                                     ${call.appointment_booked
-                                        ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Booked</span>'
+                                        ? '<span class="badge badge-success">Booked</span>'
                                         : call.callback_requested
-                                            ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Callback</span>'
-                                            : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Completed</span>'
+                                            ? '<span class="badge badge-warning">Callback</span>'
+                                            : '<span class="badge badge-default">Completed</span>'
                                     }
                                 </td>
-                                <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap" onclick="event.stopPropagation()">
+                                <td class="table-hide-mobile" onclick="event.stopPropagation()">
                                     ${call.recording_url
-                                        ? `<button onclick="playRecording('${call.recording_url}')" class="text-primary-600 hover:text-primary-800 text-sm font-medium flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        ? `<button onclick="playRecording('${call.recording_url}')" class="play-btn">
+                                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                             Play
                                            </button>`
-                                        : '<span class="text-gray-400 text-sm">No recording</span>'
+                                        : '<span style="color: var(--text-muted); font-size: 0.875rem;">No recording</span>'
                                     }
                                 </td>
-                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <span class="text-primary-600 hover:text-primary-900">View</span>
-                                </td>
+                                <td><span class="view-link">View</span></td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -796,69 +1951,69 @@
 
             if (appointments.length === 0) {
                 container.innerHTML = `
-                    <div class="p-12 text-center bg-white rounded-xl border border-gray-200">
-                        <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        <p class="mt-4 text-sm font-medium text-gray-900">No appointments yet</p>
-                        <p class="mt-1 text-sm text-gray-500">Appointments booked through your AI agent will appear here.</p>
+                    <div class="card">
+                        <div class="empty-state">
+                            <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <p class="empty-title">No appointments yet</p>
+                            <p class="empty-text">Appointments booked through your AI agent will appear here.</p>
+                        </div>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = appointments.map(apt => `
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div class="flex items-start space-x-4">
-                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-900">${apt.customer_name || 'Unknown'}</h4>
-                                <p class="text-sm text-gray-500">${apt.service_type || 'Appointment'}</p>
-                                <div class="mt-2 flex flex-wrap gap-2 text-sm text-gray-600">
-                                    <span class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                        ${apt.appointment_date}
-                                    </span>
-                                    <span class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        ${apt.appointment_time}
-                                    </span>
-                                    ${apt.customer_phone ? `
-                                        <span class="flex items-center">
-                                            <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                            </svg>
-                                            ${apt.customer_phone}
-                                        </span>
-                                    ` : ''}
-                                </div>
-                            </div>
+                <div class="appointment-card">
+                    <div class="appointment-left">
+                        <div class="appointment-icon">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
                         </div>
-                        <div class="flex items-center space-x-2 ml-16 sm:ml-0">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                apt.status === 'scheduled' ? 'bg-green-100 text-green-800' :
-                                apt.status === 'completed' ? 'bg-gray-100 text-gray-800' :
-                                apt.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                                'bg-blue-100 text-blue-800'
-                            }">${apt.status || 'scheduled'}</span>
-                            <a href="/api/appointments/${apt.id}/ics" download class="p-2 text-gray-400 hover:text-gray-600" title="Download ICS">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                            </a>
+                        <div>
+                            <h4 class="appointment-name">${apt.customer_name || 'Unknown'}</h4>
+                            <p class="appointment-service">${apt.service_type || 'Appointment'}</p>
+                            <div class="appointment-meta">
+                                <span class="appointment-meta-item">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    ${apt.appointment_date}
+                                </span>
+                                <span class="appointment-meta-item">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    ${apt.appointment_time}
+                                </span>
+                                ${apt.customer_phone ? `
+                                    <span class="appointment-meta-item">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                        </svg>
+                                        ${apt.customer_phone}
+                                    </span>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
-                    ${apt.notes ? `<p class="mt-3 text-sm text-gray-600 ml-16">${apt.notes}</p>` : ''}
+                    <div class="appointment-right">
+                        <span class="badge ${
+                            apt.status === 'scheduled' ? 'badge-success' :
+                            apt.status === 'completed' ? 'badge-default' :
+                            apt.status === 'cancelled' ? 'badge-warning' :
+                            'badge-success'
+                        }">${apt.status || 'scheduled'}</span>
+                        <a href="/api/appointments/${apt.id}/ics" download class="download-btn" title="Download ICS">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
+                ${apt.notes ? `<p style="margin: -12px 0 16px 80px; font-size: 0.875rem; color: var(--text-secondary);">${apt.notes}</p>` : ''}
             `).join('');
         }
 
@@ -882,52 +2037,52 @@
             if (!call) return;
 
             document.getElementById('callDetailContent').innerHTML = `
-                <div class="grid grid-cols-2 gap-4 sm:gap-6 mb-6">
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <p class="text-sm font-medium text-gray-500">Caller</p>
-                        <p class="mt-1 text-lg font-semibold text-gray-900">${call.caller_phone || 'Unknown'}</p>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Caller</div>
+                        <div class="detail-value">${call.caller_phone || 'Unknown'}</div>
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <p class="text-sm font-medium text-gray-500">Duration</p>
-                        <p class="mt-1 text-lg font-semibold text-gray-900">${call.duration || 0} seconds</p>
+                    <div class="detail-item">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value">${call.duration || 0} seconds</div>
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <p class="text-sm font-medium text-gray-500">Date & Time</p>
-                        <p class="mt-1 text-lg font-semibold text-gray-900">${new Date(call.created_at).toLocaleString()}</p>
+                    <div class="detail-item">
+                        <div class="detail-label">Date & Time</div>
+                        <div class="detail-value">${new Date(call.created_at).toLocaleString()}</div>
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <p class="text-sm font-medium text-gray-500">Appointment</p>
-                        <p class="mt-1 text-lg font-semibold ${call.appointment_booked ? 'text-green-600' : 'text-gray-900'}">${call.appointment_booked ? 'Yes' : 'No'}</p>
+                    <div class="detail-item">
+                        <div class="detail-label">Appointment</div>
+                        <div class="detail-value ${call.appointment_booked ? 'success' : ''}">${call.appointment_booked ? 'Yes' : 'No'}</div>
                     </div>
                 </div>
                 ${call.recording_url ? `
-                    <div class="mb-6">
-                        <h4 class="text-sm font-medium text-gray-500 mb-2">Call Recording</h4>
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <audio controls class="w-full" src="${call.recording_url}">
+                    <div class="detail-section">
+                        <div class="detail-section-title">Call Recording</div>
+                        <div class="detail-section-content">
+                            <audio controls src="${call.recording_url}">
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
                     </div>
                 ` : ''}
                 ${call.summary ? `
-                    <div class="mb-6">
-                        <h4 class="text-sm font-medium text-gray-500 mb-2">Summary</h4>
-                        <div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-700">${call.summary}</div>
+                    <div class="detail-section">
+                        <div class="detail-section-title">Summary</div>
+                        <div class="detail-section-content" style="font-size: 0.875rem; color: var(--text-secondary);">${call.summary}</div>
                     </div>
                 ` : ''}
                 ${call.transcript ? `
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-500 mb-2">Transcript</h4>
-                        <div class="bg-gray-50 rounded-lg p-4 max-h-60 overflow-y-auto text-sm text-gray-700 whitespace-pre-wrap">${call.transcript}</div>
+                    <div class="detail-section">
+                        <div class="detail-section-title">Transcript</div>
+                        <div class="detail-section-content transcript">${call.transcript}</div>
                     </div>
                 ` : ''}
             `;
-            document.getElementById('callDetailModal').classList.remove('hidden');
+            document.getElementById('callDetailModal').classList.add('active');
         }
 
         function closeCallDetail() {
-            document.getElementById('callDetailModal').classList.add('hidden');
+            document.getElementById('callDetailModal').classList.remove('active');
         }
 
         function playRecording(url) {
@@ -936,11 +2091,11 @@
         }
 
         function openTestCall() {
-            document.getElementById('testCallModal').classList.remove('hidden');
+            document.getElementById('testCallModal').classList.add('active');
         }
 
         function closeTestCall() {
-            document.getElementById('testCallModal').classList.add('hidden');
+            document.getElementById('testCallModal').classList.remove('active');
         }
 
         async function makeTestCall() {
@@ -976,11 +2131,11 @@
             document.getElementById('settingFaq').value = business.faq || '';
             document.getElementById('settingCustom').value = business.custom_instructions || '';
             document.getElementById('settingEmail').value = business.notification_email || '';
-            document.getElementById('settingsModal').classList.remove('hidden');
+            document.getElementById('settingsModal').classList.add('active');
         }
 
         function closeSettings() {
-            document.getElementById('settingsModal').classList.add('hidden');
+            document.getElementById('settingsModal').classList.remove('active');
         }
 
         async function saveSettings() {
@@ -1054,7 +2209,6 @@
         }
 
         async function loadAnalyticsData() {
-            // Generate analytics from calls data
             const days = currentTimeRange === '7d' ? 7 : currentTimeRange === '30d' ? 30 : 90;
             const dateLabels = [];
             const callCounts = [];
@@ -1080,15 +2234,15 @@
                     datasets: [{
                         label: 'Calls',
                         data: callCounts,
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
                         fill: true,
                         tension: 0.4
                     }, {
                         label: 'Appointments',
                         data: appointmentCounts,
-                        borderColor: '#22c55e',
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         fill: true,
                         tension: 0.4
                     }]
@@ -1115,7 +2269,7 @@
                     labels: ['Booked', 'Not Booked'],
                     datasets: [{
                         data: [bookedCalls, totalCalls - bookedCalls],
-                        backgroundColor: ['#22c55e', '#e5e7eb'],
+                        backgroundColor: ['#10b981', '#e5e7eb'],
                         borderWidth: 0
                     }]
                 },
@@ -1148,7 +2302,8 @@
                     datasets: [{
                         label: 'Calls',
                         data: Object.values(durationBuckets),
-                        backgroundColor: '#6366f1'
+                        backgroundColor: '#7c3aed',
+                        borderRadius: 6
                     }]
                 },
                 options: {
@@ -1184,7 +2339,8 @@
                     datasets: [{
                         label: 'Calls',
                         data: hourCounts,
-                        backgroundColor: hourCounts.map((_, i) => i === peakHour ? '#f59e0b' : '#6366f1')
+                        backgroundColor: hourCounts.map((_, i) => i === peakHour ? '#f59e0b' : '#7c3aed'),
+                        borderRadius: 4
                     }]
                 },
                 options: {
@@ -1207,9 +2363,8 @@
 
         function setTimeRange(range) {
             currentTimeRange = range;
-            document.getElementById('range7d').className = 'px-4 py-2 rounded-lg text-sm font-medium ' + (range === '7d' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200');
-            document.getElementById('range30d').className = 'px-4 py-2 rounded-lg text-sm font-medium ' + (range === '30d' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200');
-            document.getElementById('range90d').className = 'px-4 py-2 rounded-lg text-sm font-medium ' + (range === '90d' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200');
+            document.querySelectorAll('.range-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`range${range}`).classList.add('active');
             loadAnalyticsData();
         }
 
@@ -1233,23 +2388,32 @@
         function renderSmsMessages(messages) {
             const container = document.getElementById('smsList');
             if (!messages.length) {
-                container.innerHTML = `<div class="p-12 text-center"><svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg><p class="mt-4 text-sm text-gray-500">No SMS messages yet</p></div>`;
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
+                        <p class="empty-text">No SMS messages yet</p>
+                    </div>
+                `;
                 return;
             }
             container.innerHTML = messages.map(m => `
-                <div class="px-4 sm:px-6 py-4 flex items-start space-x-4">
-                    <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                <div class="sms-message">
+                    <div class="sms-avatar">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between">
-                            <p class="text-sm font-medium text-gray-900">${m.to_phone}</p>
-                            <span class="text-xs text-gray-500">${formatDate(m.sent_at || m.created_at)}</span>
+                    <div class="sms-content">
+                        <div class="sms-header">
+                            <span class="sms-phone">${m.to_phone}</span>
+                            <span class="sms-time">${formatDate(m.sent_at || m.created_at)}</span>
                         </div>
-                        <p class="text-sm text-gray-600 mt-1">${m.message}</p>
-                        <div class="mt-2 flex items-center space-x-2">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${m.status === 'delivered' ? 'bg-green-100 text-green-800' : m.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}">${m.status}</span>
-                            <span class="text-xs text-gray-500">${m.sms_type || 'manual'}</span>
+                        <p class="sms-body">${m.message}</p>
+                        <div class="sms-meta">
+                            <span class="badge ${m.status === 'delivered' ? 'badge-success' : m.status === 'failed' ? 'badge-warning' : 'badge-default'}">${m.status}</span>
+                            <span class="sms-type">${m.sms_type || 'manual'}</span>
                         </div>
                     </div>
                 </div>
@@ -1319,10 +2483,10 @@
                 if (el) {
                     const status = statusMap[type];
                     if (status === 'connected') {
-                        el.className = 'px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-600';
+                        el.className = 'integration-status connected';
                         el.textContent = 'Connected';
                     } else {
-                        el.className = 'px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600';
+                        el.className = 'integration-status disconnected';
                         el.textContent = 'Not Connected';
                     }
                 }

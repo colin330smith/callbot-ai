@@ -3,174 +3,1021 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Up Your AI Agent | CallBot AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Set Up Your AI Agent | CallAlly</title>
+    <meta name="description" content="Configure your AI receptionist in just a few minutes. No technical skills required.">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
-                    colors: {
-                        primary: {
-                            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
-                            400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
-                            800: '#3730a3', 900: '#312e81',
-                        }
-                    }
-                }
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --primary-light: #a78bfa;
+            --primary-50: #f5f3ff;
+            --primary-100: #ede9fe;
+            --text-primary: #1e1b4b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --bg-white: #ffffff;
+            --bg-gray: #f8fafc;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-light: #dcfce7;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --error: #ef4444;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 25px -3px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            background: var(--bg-gray);
+        }
+
+        .outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+        }
+
+        .nav-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 72px;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        .nav-logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Main Container */
+        .main {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 32px 24px 64px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 32px;
+        }
+
+        .progress-bar-wrapper {
+            position: relative;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: var(--border);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 100px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .progress-percent {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* Step Labels */
+        .step-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .step-label {
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .step-circle.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        .step-circle.completed {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-circle.pending {
+            background: var(--border);
+            color: var(--text-muted);
+        }
+
+        .step-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .step-name.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--bg-white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .step-content {
+            padding: 32px;
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .step-header {
+            margin-bottom: 24px;
+        }
+
+        .step-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .step-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text-primary);
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text-primary);
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.2s;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 20px;
+            padding-right: 48px;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 640px) {
+            .options-grid {
+                grid-template-columns: 1fr;
             }
         }
-    </script>
-    <style>
-        body { font-family: 'Inter', system-ui, sans-serif; }
-        .toggle-checkbox:checked { right: 0; border-color: #4f46e5; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }
+
+        .option-card {
+            position: relative;
+            padding: 16px;
+            background: var(--bg-gray);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-card:hover {
+            border-color: var(--primary-light);
+        }
+
+        .option-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-50);
+        }
+
+        .option-card input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .option-card-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .option-card.selected .option-checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .option-checkbox svg {
+            width: 12px;
+            height: 12px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .option-card.selected .option-checkbox svg {
+            opacity: 1;
+        }
+
+        .option-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Radio Cards */
+        .radio-card {
+            position: relative;
+            padding: 20px;
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .radio-card:hover {
+            border-color: var(--primary-light);
+        }
+
+        .radio-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-50);
+        }
+
+        .radio-card input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .radio-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .radio-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .radio-card-badge {
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 50px;
+        }
+
+        .badge-recommended {
+            background: var(--success-light);
+            color: #166534;
+        }
+
+        .badge-handfree {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .radio-card-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .radio-card-features {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .radio-card-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .radio-card-feature svg {
+            width: 16px;
+            height: 16px;
+            color: var(--success);
+        }
+
+        .radio-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .radio-card.selected .radio-indicator {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .radio-indicator svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+            opacity: 0;
+        }
+
+        .radio-card.selected .radio-indicator svg {
+            opacity: 1;
+        }
+
+        /* Voice Cards */
+        .voice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .voice-card {
+            position: relative;
+            padding: 16px;
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .voice-card:hover {
+            border-color: var(--primary-light);
+        }
+
+        .voice-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-50);
+        }
+
+        .voice-card input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .voice-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .voice-card-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .voice-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .voice-card.selected .voice-check {
+            background: var(--primary);
+        }
+
+        .voice-check svg {
+            width: 12px;
+            height: 12px;
+            color: white;
+            opacity: 0;
+        }
+
+        .voice-card.selected .voice-check svg {
+            opacity: 1;
+        }
+
+        .voice-card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Emergency Section */
+        .emergency-section {
+            padding: 20px;
+            background: var(--warning-light);
+            border: 1px solid #fde68a;
+            border-radius: 16px;
+            margin-top: 24px;
+        }
+
+        .emergency-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .emergency-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .emergency-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--warning);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .emergency-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .emergency-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .emergency-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--border);
+            border-radius: 50px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider::before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        input:checked + .toggle-slider {
+            background: var(--warning);
+        }
+
+        input:checked + .toggle-slider::before {
+            transform: translateX(24px);
+        }
+
+        .emergency-fields {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .emergency-fields.visible {
+            display: block;
+        }
+
+        /* Summary */
+        .summary-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .summary-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Info Box */
+        .info-box {
+            padding: 16px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            margin-top: 24px;
+        }
+
+        .info-box-content {
+            display: flex;
+            gap: 12px;
+        }
+
+        .info-box-icon {
+            width: 20px;
+            height: 20px;
+            color: #2563eb;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-box-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .info-box-text {
+            font-size: 14px;
+            color: #3b82f6;
+            line-height: 1.5;
+        }
+
+        /* Navigation */
+        .form-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 32px;
+            background: var(--bg-gray);
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+        }
+
+        .btn-secondary {
+            background: var(--bg-white);
+            color: var(--text-secondary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-gray);
+            color: var(--text-primary);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Loading Modal */
+        .loading-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-modal.visible {
+            display: flex;
+        }
+
+        .loading-card {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .loading-spinner {
+            width: 64px;
+            height: 64px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Divider */
+        .divider {
+            border-top: 1px solid var(--border);
+            margin: 24px 0;
+            padding-top: 24px;
+        }
+
+        .divider-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        /* Form Row */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Helper Text */
+        .form-helper {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen antialiased">
-    <!-- Header -->
-    <nav class="bg-white border-b border-gray-100">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-center items-center h-16">
-                <a href="/" class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                        </svg>
-                    </div>
-                    <span class="text-xl font-semibold text-gray-900">CallBot AI</span>
-                </a>
-            </div>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">
+                    <svg width="22" height="22" fill="none" stroke="white" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                </div>
+                <span class="nav-logo-text outfit">CallAlly</span>
+            </a>
         </div>
     </nav>
 
-    <div class="max-w-2xl mx-auto px-4 py-8 sm:py-12">
+    <div class="main">
         <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Set up your AI agent</h1>
-            <p class="mt-2 text-gray-600">This takes about 3 minutes</p>
+        <div class="header">
+            <h1 class="header-title outfit">Set up your AI agent</h1>
+            <p class="header-subtitle">This takes about 3 minutes</p>
         </div>
 
         <!-- Progress Bar -->
-        <div class="mb-8">
-            <!-- Continuous Progress Bar -->
-            <div class="relative">
-                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div id="progressBar" class="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full transition-all duration-500 ease-out" style="width: 20%"></div>
+        <div class="progress-container">
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-bg">
+                    <div id="progressBar" class="progress-bar-fill" style="width: 20%"></div>
                 </div>
-                <div class="flex justify-between mt-3">
-                    <span id="progressText" class="text-sm font-medium text-primary-600">Step 1 of 5</span>
-                    <span id="progressPercent" class="text-sm font-medium text-gray-500">20%</span>
+                <div class="progress-info">
+                    <span id="progressText" class="progress-text">Step 1 of 5</span>
+                    <span id="progressPercent" class="progress-percent">20%</span>
                 </div>
             </div>
-            <!-- Step Labels -->
-            <div class="flex justify-between mt-4 px-2">
-                <div class="step-label text-center" data-step="1">
-                    <div class="w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-semibold mx-auto">1</div>
-                    <span class="text-xs font-medium mt-1 block text-primary-600">Business</span>
+
+            <div class="step-labels">
+                <div class="step-label" data-step="1">
+                    <div class="step-circle active">1</div>
+                    <span class="step-name active">Business</span>
                 </div>
-                <div class="step-label text-center" data-step="2">
-                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto">2</div>
-                    <span class="text-xs font-medium mt-1 block text-gray-400">Services</span>
+                <div class="step-label" data-step="2">
+                    <div class="step-circle pending">2</div>
+                    <span class="step-name">Services</span>
                 </div>
-                <div class="step-label text-center" data-step="3">
-                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto">3</div>
-                    <span class="text-xs font-medium mt-1 block text-gray-400">Call Mode</span>
+                <div class="step-label" data-step="3">
+                    <div class="step-circle pending">3</div>
+                    <span class="step-name">Call Mode</span>
                 </div>
-                <div class="step-label text-center" data-step="4">
-                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto">4</div>
-                    <span class="text-xs font-medium mt-1 block text-gray-400">Agent</span>
+                <div class="step-label" data-step="4">
+                    <div class="step-circle pending">4</div>
+                    <span class="step-name">Agent</span>
                 </div>
-                <div class="step-label text-center" data-step="5">
-                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto">5</div>
-                    <span class="text-xs font-medium mt-1 block text-gray-400">Launch</span>
+                <div class="step-label" data-step="5">
+                    <div class="step-circle pending">5</div>
+                    <span class="step-name">Launch</span>
                 </div>
             </div>
         </div>
 
         <!-- Form Card -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="form-card">
             <!-- Step 1: Business Info -->
-            <div class="step-content p-6 sm:p-8" data-step="1">
-                <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900">Tell us about your business</h2>
-                    <p class="mt-1 text-sm text-gray-500">We'll use this to customize your AI agent.</p>
+            <div class="step-content active" data-step="1">
+                <div class="step-header">
+                    <h2 class="step-title">Tell us about your business</h2>
+                    <p class="step-description">We'll use this to customize your AI agent.</p>
                 </div>
-                <div class="space-y-5">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1.5">Business name</label>
-                        <input type="text" id="name" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                            placeholder="Acme Plumbing">
-                    </div>
-                    <div>
-                        <label for="industry" class="block text-sm font-medium text-gray-700 mb-1.5">Industry</label>
-                        <select id="industry" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 bg-white">
-                            <option value="">Select your industry</option>
-                            <option value="hvac">HVAC / Heating & Cooling</option>
-                            <option value="plumbing">Plumbing</option>
-                            <option value="electrical">Electrical</option>
-                            <option value="roofing">Roofing</option>
-                            <option value="landscaping">Landscaping</option>
-                            <option value="cleaning">Cleaning Services</option>
-                            <option value="dental">Dental Practice</option>
-                            <option value="medical">Medical Practice</option>
-                            <option value="medspa">Med Spa / Aesthetics</option>
-                            <option value="legal">Law Firm</option>
-                            <option value="accounting">Accounting / CPA</option>
-                            <option value="realestate">Real Estate</option>
-                            <option value="automotive">Auto Repair</option>
-                            <option value="restaurant">Restaurant</option>
-                            <option value="salon">Salon / Barbershop</option>
-                            <option value="fitness">Gym / Fitness</option>
-                            <option value="veterinary">Veterinary</option>
-                            <option value="insurance">Insurance</option>
-                            <option value="contractor">General Contractor</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1.5">Business phone</label>
-                        <input type="tel" id="phone"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                            placeholder="(555) 123-4567">
-                    </div>
-                    <div>
-                        <label for="service_area" class="block text-sm font-medium text-gray-700 mb-1.5">Service area</label>
-                        <input type="text" id="service_area"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                            placeholder="Austin, TX and surrounding areas">
-                    </div>
+                <div class="form-group">
+                    <label for="name" class="form-label">Business name</label>
+                    <input type="text" id="name" class="form-input" placeholder="Acme Plumbing" required>
+                </div>
+                <div class="form-group">
+                    <label for="industry" class="form-label">Industry</label>
+                    <select id="industry" class="form-select" required>
+                        <option value="">Select your industry</option>
+                        <option value="hvac">HVAC / Heating & Cooling</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="roofing">Roofing</option>
+                        <option value="landscaping">Landscaping</option>
+                        <option value="cleaning">Cleaning Services</option>
+                        <option value="dental">Dental Practice</option>
+                        <option value="medical">Medical Practice</option>
+                        <option value="medspa">Med Spa / Aesthetics</option>
+                        <option value="legal">Law Firm</option>
+                        <option value="accounting">Accounting / CPA</option>
+                        <option value="realestate">Real Estate</option>
+                        <option value="automotive">Auto Repair</option>
+                        <option value="restaurant">Restaurant</option>
+                        <option value="salon">Salon / Barbershop</option>
+                        <option value="fitness">Gym / Fitness</option>
+                        <option value="veterinary">Veterinary</option>
+                        <option value="insurance">Insurance</option>
+                        <option value="contractor">General Contractor</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phone" class="form-label">Business phone</label>
+                    <input type="tel" id="phone" class="form-input" placeholder="(555) 123-4567" inputmode="tel" autocomplete="tel">
+                </div>
+                <div class="form-group">
+                    <label for="service_area" class="form-label">Service area</label>
+                    <input type="text" id="service_area" class="form-input" placeholder="Austin, TX and surrounding areas">
                 </div>
             </div>
 
-            <!-- Step 2: Services (Form-based) -->
-            <div class="step-content hidden p-6 sm:p-8" data-step="2">
-                <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900">What services do you offer?</h2>
-                    <p class="mt-1 text-sm text-gray-500">Select all services your business provides.</p>
+            <!-- Step 2: Services -->
+            <div class="step-content" data-step="2">
+                <div class="step-header">
+                    <h2 class="step-title">What services do you offer?</h2>
+                    <p class="step-description">Select all services your business provides.</p>
                 </div>
-                <div id="servicesContainer" class="space-y-5">
-                    <!-- Services will be populated based on industry -->
-                    <div class="grid grid-cols-2 gap-3" id="serviceCheckboxes">
-                        <!-- Dynamic checkboxes -->
-                    </div>
-                    <div>
-                        <label for="other_services" class="block text-sm font-medium text-gray-700 mb-1.5">Other services (comma-separated)</label>
-                        <input type="text" id="other_services"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                            placeholder="Custom service 1, Custom service 2">
-                    </div>
+                <div class="options-grid" id="serviceCheckboxes">
+                    <!-- Populated dynamically -->
                 </div>
-                <div class="mt-6 pt-6 border-t border-gray-200">
-                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Business hours</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="hours_weekday" class="block text-sm font-medium text-gray-700 mb-1.5">Weekdays</label>
-                            <select id="hours_weekday" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 bg-white">
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="other_services" class="form-label">Other services (comma-separated)</label>
+                    <input type="text" id="other_services" class="form-input" placeholder="Custom service 1, Custom service 2">
+                </div>
+                <div class="divider">
+                    <h3 class="divider-title">Business hours</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hours_weekday" class="form-label">Weekdays</label>
+                            <select id="hours_weekday" class="form-select">
                                 <option value="8am-5pm">8:00 AM - 5:00 PM</option>
                                 <option value="8am-6pm">8:00 AM - 6:00 PM</option>
                                 <option value="9am-5pm">9:00 AM - 5:00 PM</option>
@@ -180,9 +1027,9 @@
                                 <option value="closed">Closed</option>
                             </select>
                         </div>
-                        <div>
-                            <label for="hours_weekend" class="block text-sm font-medium text-gray-700 mb-1.5">Weekends</label>
-                            <select id="hours_weekend" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 bg-white">
+                        <div class="form-group">
+                            <label for="hours_weekend" class="form-label">Weekends</label>
+                            <select id="hours_weekend" class="form-select">
                                 <option value="closed">Closed</option>
                                 <option value="9am-2pm">9:00 AM - 2:00 PM</option>
                                 <option value="9am-5pm">9:00 AM - 5:00 PM</option>
@@ -195,282 +1042,288 @@
                 </div>
             </div>
 
-            <!-- Step 3: Call Mode Selection -->
-            <div class="step-content hidden p-6 sm:p-8" data-step="3">
-                <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900">How should AI handle your calls?</h2>
-                    <p class="mt-1 text-sm text-gray-500">Choose how you want CallBot AI to work with your existing phone.</p>
+            <!-- Step 3: Call Mode -->
+            <div class="step-content" data-step="3">
+                <div class="step-header">
+                    <h2 class="step-title">How should AI handle your calls?</h2>
+                    <p class="step-description">Choose how you want CallAlly to work with your existing phone.</p>
                 </div>
-                <div class="space-y-5">
-                    <!-- Call Mode Selection -->
-                    <div class="space-y-4">
-                        <!-- Call Forwarding Option -->
-                        <label class="call-mode-option relative flex p-5 border-2 border-primary-500 bg-primary-50 rounded-xl cursor-pointer transition" data-mode="forwarding">
-                            <input type="radio" name="call_mode" value="forwarding" checked class="sr-only">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-base font-semibold text-gray-900">Call Forwarding</span>
-                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">Recommended</span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-3">AI catches calls only when you don't answer. Your phone rings first, and if you miss it, AI picks up before voicemail.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                    Keep your existing number
-                                </div>
-                                <div class="flex items-center text-sm text-gray-500 mt-1">
-                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                    Answer calls yourself when available
-                                </div>
-                            </div>
-                            <svg class="w-6 h-6 text-primary-600 ml-4 check-icon" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                        </label>
 
-                        <!-- Call Takeover Option -->
-                        <label class="call-mode-option relative flex p-5 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gray-300 transition" data-mode="takeover">
-                            <input type="radio" name="call_mode" value="takeover" class="sr-only">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-base font-semibold text-gray-900">Full Takeover</span>
-                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">Hands-free</span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-3">AI handles ALL calls. Every call goes directly to your AI agent. Perfect if you want to focus 100% on fieldwork.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                    Zero interruptions
-                                </div>
-                                <div class="flex items-center text-sm text-gray-500 mt-1">
-                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                    Get notifications for urgent calls
-                                </div>
-                            </div>
-                            <svg class="w-6 h-6 text-primary-600 ml-4 check-icon hidden" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                        </label>
+                <label class="radio-card selected" data-mode="forwarding">
+                    <input type="radio" name="call_mode" value="forwarding" checked>
+                    <div class="radio-card-header">
+                        <span class="radio-card-title">Call Forwarding</span>
+                        <span class="radio-card-badge badge-recommended">Recommended</span>
                     </div>
-
-                    <!-- Emergency Dispatch Section -->
-                    <div class="pt-6 border-t border-gray-200">
-                        <div class="flex items-center justify-between p-4 bg-orange-50 rounded-xl border border-orange-200">
-                            <div class="flex-1">
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 text-orange-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                    </svg>
-                                    <p class="text-sm font-semibold text-gray-900">Emergency Dispatch Mode</p>
-                                </div>
-                                <p class="text-sm text-gray-600 mt-1 ml-7">For urgent calls, AI stays on the line with the customer while simultaneously reaching out to your on-call team.</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer ml-4">
-                                <input type="checkbox" id="emergency_dispatch" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-100 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-                            </label>
+                    <p class="radio-card-description">AI catches calls only when you don't answer. Your phone rings first, and if you miss it, AI picks up before voicemail.</p>
+                    <div class="radio-card-features">
+                        <div class="radio-card-feature">
+                            <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Keep your existing number
                         </div>
-
-                        <!-- On-call workers (shown when emergency dispatch is enabled) -->
-                        <div id="onCallSection" class="hidden mt-4 space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">On-call worker phones (comma-separated)</label>
-                                <input type="text" id="oncall_phones"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                                    placeholder="(555) 111-2222, (555) 333-4444">
-                                <p class="mt-1.5 text-sm text-gray-500">AI will call these numbers in order during emergencies while keeping the customer on the line.</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Emergency keywords (what triggers dispatch)</label>
-                                <input type="text" id="emergency_keywords"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                                    placeholder="emergency, urgent, flooding, no heat, burst pipe">
-                            </div>
+                        <div class="radio-card-feature">
+                            <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Answer calls yourself when available
                         </div>
                     </div>
+                    <div class="radio-indicator">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                </label>
 
-                    <!-- Forwarding number (for forwarding mode) -->
-                    <div id="forwardingSection" class="pt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Number of rings before AI answers</label>
-                        <select id="rings_before_ai" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 bg-white">
+                <label class="radio-card" data-mode="takeover">
+                    <input type="radio" name="call_mode" value="takeover">
+                    <div class="radio-card-header">
+                        <span class="radio-card-title">Full Takeover</span>
+                        <span class="radio-card-badge badge-handfree">Hands-free</span>
+                    </div>
+                    <p class="radio-card-description">AI handles ALL calls. Every call goes directly to your AI agent. Perfect if you want to focus 100% on fieldwork.</p>
+                    <div class="radio-card-features">
+                        <div class="radio-card-feature">
+                            <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Zero interruptions
+                        </div>
+                        <div class="radio-card-feature">
+                            <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Get notifications for urgent calls
+                        </div>
+                    </div>
+                    <div class="radio-indicator">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                </label>
+
+                <div id="forwardingOptions" class="divider">
+                    <h3 class="divider-title">Forwarding options</h3>
+                    <div class="form-group">
+                        <label for="rings_before_ai" class="form-label">Number of rings before AI answers</label>
+                        <select id="rings_before_ai" class="form-select">
                             <option value="2">2 rings (~10 seconds)</option>
                             <option value="3" selected>3 rings (~15 seconds)</option>
                             <option value="4">4 rings (~20 seconds)</option>
                             <option value="5">5 rings (~25 seconds)</option>
                         </select>
-                        <p class="mt-1.5 text-sm text-gray-500">How long your phone rings before AI picks up.</p>
+                        <p class="form-helper">How long your phone rings before AI picks up.</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- Step 4: Agent Configuration -->
-            <div class="step-content hidden p-6 sm:p-8" data-step="4">
-                <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900">Customize your AI agent</h2>
-                    <p class="mt-1 text-sm text-gray-500">Choose how your AI introduces itself to callers.</p>
-                </div>
-                <div class="space-y-6">
-                    <div>
-                        <label for="agent_name" class="block text-sm font-medium text-gray-700 mb-1.5">Agent name</label>
-                        <select id="agent_name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 bg-white">
-                            <option value="Alex">Alex</option>
-                            <option value="Sam">Sam</option>
-                            <option value="Jordan">Jordan</option>
-                            <option value="Taylor">Taylor</option>
-                            <option value="Morgan">Morgan</option>
-                            <option value="Casey">Casey</option>
-                            <option value="Riley">Riley</option>
-                        </select>
-                        <p class="mt-1.5 text-sm text-gray-500">The name your AI will use when answering calls.</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Voice</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <label class="relative flex items-center p-4 border-2 border-primary-500 bg-primary-50 rounded-xl cursor-pointer voice-option" data-voice="rachel">
-                                <input type="radio" name="agent_voice" value="rachel" checked class="sr-only">
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm font-semibold text-gray-900">Rachel</span>
-                                        <svg class="w-5 h-5 text-primary-600 check-icon" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm text-gray-500">Warm, professional female</span>
-                                </div>
-                            </label>
-                            <label class="relative flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gray-300 transition voice-option" data-voice="adam">
-                                <input type="radio" name="agent_voice" value="adam" class="sr-only">
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm font-semibold text-gray-900">Adam</span>
-                                        <svg class="w-5 h-5 text-primary-600 check-icon hidden" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm text-gray-500">Professional male</span>
-                                </div>
-                            </label>
-                            <label class="relative flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gray-300 transition voice-option" data-voice="sarah">
-                                <input type="radio" name="agent_voice" value="sarah" class="sr-only">
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm font-semibold text-gray-900">Sarah</span>
-                                        <svg class="w-5 h-5 text-primary-600 check-icon hidden" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm text-gray-500">Friendly, upbeat female</span>
-                                </div>
-                            </label>
-                            <label class="relative flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gray-300 transition voice-option" data-voice="josh">
-                                <input type="radio" name="agent_voice" value="josh" class="sr-only">
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm font-semibold text-gray-900">Josh</span>
-                                        <svg class="w-5 h-5 text-primary-600 check-icon hidden" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm text-gray-500">Casual, approachable male</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="appointment_types" class="block text-sm font-medium text-gray-700 mb-3">Appointment types your AI can book</label>
-                        <div class="grid grid-cols-2 gap-2" id="appointmentTypes">
-                            <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="checkbox" value="service-call" class="appointment-type rounded border-gray-300 text-primary-600 focus:ring-primary-500" checked>
-                                <span class="ml-2 text-sm text-gray-700">Service call</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="checkbox" value="estimate" class="appointment-type rounded border-gray-300 text-primary-600 focus:ring-primary-500" checked>
-                                <span class="ml-2 text-sm text-gray-700">Free estimate</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="checkbox" value="consultation" class="appointment-type rounded border-gray-300 text-primary-600 focus:ring-primary-500">
-                                <span class="ml-2 text-sm text-gray-700">Consultation</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="checkbox" value="maintenance" class="appointment-type rounded border-gray-300 text-primary-600 focus:ring-primary-500">
-                                <span class="ml-2 text-sm text-gray-700">Maintenance</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="checkbox" value="emergency" class="appointment-type rounded border-gray-300 text-primary-600 focus:ring-primary-500">
-                                <span class="ml-2 text-sm text-gray-700">Emergency</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="checkbox" value="follow-up" class="appointment-type rounded border-gray-300 text-primary-600 focus:ring-primary-500">
-                                <span class="ml-2 text-sm text-gray-700">Follow-up</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 5: Notifications & Launch -->
-            <div class="step-content hidden p-6 sm:p-8" data-step="5">
-                <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900">Almost done!</h2>
-                    <p class="mt-1 text-sm text-gray-500">Set up notifications to stay informed about calls.</p>
-                </div>
-                <div class="space-y-5">
-                    <div>
-                        <label for="notification_email" class="block text-sm font-medium text-gray-700 mb-1.5">Notification email</label>
-                        <input type="email" id="notification_email"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                            placeholder="you@business.com">
-                        <p class="mt-1.5 text-sm text-gray-500">Get call summaries and appointment bookings sent here.</p>
-                    </div>
-                    <div>
-                        <label for="notification_phone" class="block text-sm font-medium text-gray-700 mb-1.5">
-                            SMS notifications <span class="text-gray-400 font-normal">(optional)</span>
-                        </label>
-                        <input type="tel" id="notification_phone"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900"
-                            placeholder="(555) 123-4567">
-                        <p class="mt-1.5 text-sm text-gray-500">Get instant text alerts for each call.</p>
-                    </div>
-
-                    <div class="pt-5 border-t border-gray-200">
-                        <h3 class="text-sm font-semibold text-gray-900 mb-3">Summary</h3>
-                        <div id="summary" class="bg-gray-50 rounded-xl p-4 space-y-2">
-                            <!-- Filled by JS -->
-                        </div>
-                    </div>
-
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                        <div class="flex">
-                            <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-blue-800">AI Disclosure</p>
-                                <p class="text-sm text-blue-700 mt-1">Your AI will identify itself as an AI assistant to all callers for transparency and compliance.</p>
+                <div class="emergency-section">
+                    <div class="emergency-header">
+                        <div class="emergency-info">
+                            <div class="emergency-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
                             </div>
+                            <div>
+                                <div class="emergency-title">Emergency Dispatch Mode</div>
+                                <div class="emergency-desc">AI alerts your team during urgent calls</div>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="emergency_dispatch">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div id="emergencyFields" class="emergency-fields">
+                        <div class="form-group">
+                            <label for="oncall_phones" class="form-label">On-call worker phones</label>
+                            <input type="text" id="oncall_phones" class="form-input" placeholder="(555) 111-2222, (555) 333-4444">
+                            <p class="form-helper">AI will call these numbers in order during emergencies.</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="emergency_keywords" class="form-label">Emergency keywords</label>
+                            <input type="text" id="emergency_keywords" class="form-input" placeholder="emergency, urgent, flooding, no heat, burst pipe">
+                            <p class="form-helper">What words trigger emergency dispatch.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Agent Config -->
+            <div class="step-content" data-step="4">
+                <div class="step-header">
+                    <h2 class="step-title">Customize your AI agent</h2>
+                    <p class="step-description">Choose how your AI introduces itself to callers.</p>
+                </div>
+                <div class="form-group">
+                    <label for="agent_name" class="form-label">Agent name</label>
+                    <select id="agent_name" class="form-select">
+                        <option value="Alex">Alex</option>
+                        <option value="Sam">Sam</option>
+                        <option value="Jordan">Jordan</option>
+                        <option value="Taylor">Taylor</option>
+                        <option value="Morgan">Morgan</option>
+                        <option value="Casey">Casey</option>
+                        <option value="Riley">Riley</option>
+                    </select>
+                    <p class="form-helper">The name your AI will use when answering calls.</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Voice</label>
+                    <div class="voice-grid">
+                        <label class="voice-card selected" data-voice="rachel">
+                            <input type="radio" name="agent_voice" value="rachel" checked>
+                            <div class="voice-card-header">
+                                <span class="voice-card-name">Rachel</span>
+                                <div class="voice-check">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                            </div>
+                            <span class="voice-card-desc">Warm, professional female</span>
+                        </label>
+                        <label class="voice-card" data-voice="adam">
+                            <input type="radio" name="agent_voice" value="adam">
+                            <div class="voice-card-header">
+                                <span class="voice-card-name">Adam</span>
+                                <div class="voice-check">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                            </div>
+                            <span class="voice-card-desc">Professional male</span>
+                        </label>
+                        <label class="voice-card" data-voice="sarah">
+                            <input type="radio" name="agent_voice" value="sarah">
+                            <div class="voice-card-header">
+                                <span class="voice-card-name">Sarah</span>
+                                <div class="voice-check">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                            </div>
+                            <span class="voice-card-desc">Friendly, upbeat female</span>
+                        </label>
+                        <label class="voice-card" data-voice="josh">
+                            <input type="radio" name="agent_voice" value="josh">
+                            <div class="voice-card-header">
+                                <span class="voice-card-name">Josh</span>
+                                <div class="voice-check">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                            </div>
+                            <span class="voice-card-desc">Casual, approachable male</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="divider">
+                    <h3 class="divider-title">Appointment types your AI can book</h3>
+                    <div class="options-grid" id="appointmentTypes">
+                        <label class="option-card selected">
+                            <input type="checkbox" value="service-call" class="appointment-type" checked>
+                            <div class="option-card-content">
+                                <div class="option-checkbox">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                <span class="option-label">Service call</span>
+                            </div>
+                        </label>
+                        <label class="option-card selected">
+                            <input type="checkbox" value="estimate" class="appointment-type" checked>
+                            <div class="option-card-content">
+                                <div class="option-checkbox">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                <span class="option-label">Free estimate</span>
+                            </div>
+                        </label>
+                        <label class="option-card">
+                            <input type="checkbox" value="consultation" class="appointment-type">
+                            <div class="option-card-content">
+                                <div class="option-checkbox">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                <span class="option-label">Consultation</span>
+                            </div>
+                        </label>
+                        <label class="option-card">
+                            <input type="checkbox" value="maintenance" class="appointment-type">
+                            <div class="option-card-content">
+                                <div class="option-checkbox">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                <span class="option-label">Maintenance</span>
+                            </div>
+                        </label>
+                        <label class="option-card">
+                            <input type="checkbox" value="emergency" class="appointment-type">
+                            <div class="option-card-content">
+                                <div class="option-checkbox">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                <span class="option-label">Emergency</span>
+                            </div>
+                        </label>
+                        <label class="option-card">
+                            <input type="checkbox" value="follow-up" class="appointment-type">
+                            <div class="option-card-content">
+                                <div class="option-checkbox">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                <span class="option-label">Follow-up</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Launch -->
+            <div class="step-content" data-step="5">
+                <div class="step-header">
+                    <h2 class="step-title">Almost done!</h2>
+                    <p class="step-description">Set up notifications to stay informed about calls.</p>
+                </div>
+                <div class="form-group">
+                    <label for="notification_email" class="form-label">Notification email</label>
+                    <input type="email" id="notification_email" class="form-input" placeholder="you@business.com" inputmode="email" autocomplete="email">
+                    <p class="form-helper">Get call summaries and appointment bookings sent here.</p>
+                </div>
+                <div class="form-group">
+                    <label for="notification_phone" class="form-label">SMS notifications <span style="color: var(--text-muted); font-weight: 400;">(optional)</span></label>
+                    <input type="tel" id="notification_phone" class="form-input" placeholder="(555) 123-4567" inputmode="tel" autocomplete="tel">
+                    <p class="form-helper">Get instant text alerts for each call.</p>
+                </div>
+
+                <div class="divider">
+                    <h3 class="divider-title">Summary</h3>
+                    <div id="summary" class="summary-grid">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <svg class="info-box-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div>
+                            <p class="info-box-title">AI Disclosure</p>
+                            <p class="info-box-text">Your AI will identify itself as an AI assistant to all callers for transparency and compliance.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Navigation -->
-            <div class="px-6 sm:px-8 py-5 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
-                <button id="prevBtn" class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-white transition hidden">
+            <div class="form-nav">
+                <button id="prevBtn" class="btn btn-secondary" style="visibility: hidden;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     Back
                 </button>
-                <div class="flex-1"></div>
-                <button id="nextBtn" class="px-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 focus:ring-4 focus:ring-primary-100 transition">
+                <button id="nextBtn" class="btn btn-primary">
                     Continue
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Loading Modal -->
-    <div id="loadingModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-2xl p-8 max-w-sm w-full mx-4 text-center shadow-xl">
-            <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Creating your AI agent...</h3>
-            <p class="text-sm text-gray-500">This takes about 10 seconds</p>
+    <div id="loadingModal" class="loading-modal">
+        <div class="loading-card">
+            <div class="loading-spinner"></div>
+            <h3 class="loading-title">Creating your AI agent...</h3>
+            <p class="loading-text">This takes about 10 seconds</p>
         </div>
     </div>
 
@@ -502,7 +1355,7 @@
             const data = await response.json();
 
             if (!data.authenticated) {
-                window.location.href = '/signup';
+                window.location.href = '/signup.html';
                 return;
             }
 
@@ -517,65 +1370,120 @@
                 if (biz.notification_email) document.getElementById('notification_email').value = biz.notification_email;
             }
 
-            // Listen for industry change
             document.getElementById('industry').addEventListener('change', (e) => {
                 updateServicesForIndustry(e.target.value);
             });
+
+            // Initialize option cards
+            initOptionCards();
+            initRadioCards();
+            initVoiceCards();
+            initEmergencyToggle();
         }
 
         function updateServicesForIndustry(industry) {
             const services = industryServices[industry] || industryServices.default;
             const container = document.getElementById('serviceCheckboxes');
-
             container.innerHTML = services.map(service => `
-                <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                    <input type="checkbox" value="${service}" class="service-checkbox rounded border-gray-300 text-primary-600 focus:ring-primary-500">
-                    <span class="ml-2 text-sm text-gray-700">${service}</span>
+                <label class="option-card">
+                    <input type="checkbox" value="${service}" class="service-checkbox">
+                    <div class="option-card-content">
+                        <div class="option-checkbox">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <span class="option-label">${service}</span>
+                    </div>
                 </label>
             `).join('');
+            initOptionCards();
+        }
+
+        function initOptionCards() {
+            document.querySelectorAll('.option-card').forEach(card => {
+                const checkbox = card.querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                    card.classList.toggle('selected', checkbox.checked);
+                    card.addEventListener('click', (e) => {
+                        if (e.target.tagName !== 'INPUT') {
+                            checkbox.checked = !checkbox.checked;
+                        }
+                        card.classList.toggle('selected', checkbox.checked);
+                    });
+                }
+            });
+        }
+
+        function initRadioCards() {
+            document.querySelectorAll('.radio-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    card.querySelector('input').checked = true;
+
+                    const mode = card.dataset.mode;
+                    document.getElementById('forwardingOptions').style.display = mode === 'forwarding' ? 'block' : 'none';
+                });
+            });
+        }
+
+        function initVoiceCards() {
+            document.querySelectorAll('.voice-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.voice-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    card.querySelector('input').checked = true;
+                });
+            });
+        }
+
+        function initEmergencyToggle() {
+            document.getElementById('emergency_dispatch').addEventListener('change', (e) => {
+                document.getElementById('emergencyFields').classList.toggle('visible', e.target.checked);
+            });
         }
 
         function showStep(step) {
-            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
-            document.querySelector(`.step-content[data-step="${step}"]`).classList.remove('hidden');
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
 
-            // Update progress bar
             const progress = (step / totalSteps) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
             document.getElementById('progressText').textContent = `Step ${step} of ${totalSteps}`;
             document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
 
-            // Update step labels
             document.querySelectorAll('.step-label').forEach(el => {
                 const s = parseInt(el.dataset.step);
-                const circle = el.querySelector('div');
-                const label = el.querySelector('span');
+                const circle = el.querySelector('.step-circle');
+                const name = el.querySelector('.step-name');
+
+                circle.classList.remove('active', 'completed', 'pending');
+                name.classList.remove('active');
 
                 if (s < step) {
-                    circle.className = 'w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-semibold mx-auto';
-                    circle.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
-                    label.className = 'text-xs font-medium mt-1 block text-primary-600';
+                    circle.classList.add('completed');
+                    circle.innerHTML = '<svg width="16" height="16" fill="none" stroke="white" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
                 } else if (s === step) {
-                    circle.className = 'w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-semibold mx-auto';
+                    circle.classList.add('active');
                     circle.textContent = s;
-                    label.className = 'text-xs font-medium mt-1 block text-primary-600';
+                    name.classList.add('active');
                 } else {
-                    circle.className = 'w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-semibold mx-auto';
+                    circle.classList.add('pending');
                     circle.textContent = s;
-                    label.className = 'text-xs font-medium mt-1 block text-gray-400';
                 }
             });
 
-            document.getElementById('prevBtn').classList.toggle('hidden', step === 1);
+            document.getElementById('prevBtn').style.visibility = step === 1 ? 'hidden' : 'visible';
 
             const nextBtn = document.getElementById('nextBtn');
             if (step === totalSteps) {
-                nextBtn.textContent = 'Launch my AI agent';
-                nextBtn.className = 'px-6 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 focus:ring-4 focus:ring-green-100 transition';
+                nextBtn.innerHTML = 'Launch my AI agent <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>';
+                nextBtn.classList.remove('btn-primary');
+                nextBtn.classList.add('btn-success');
                 updateSummary();
             } else {
-                nextBtn.textContent = 'Continue';
-                nextBtn.className = 'px-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 focus:ring-4 focus:ring-primary-100 transition';
+                nextBtn.innerHTML = 'Continue <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>';
+                nextBtn.classList.remove('btn-success');
+                nextBtn.classList.add('btn-primary');
             }
         }
 
@@ -587,15 +1495,12 @@
                 data.phone = document.getElementById('phone').value;
                 data.service_area = document.getElementById('service_area').value;
             } else if (step === 2) {
-                // Collect checked services
                 const selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked')).map(cb => cb.value);
                 const otherServices = document.getElementById('other_services').value;
                 if (otherServices) {
                     selectedServices.push(...otherServices.split(',').map(s => s.trim()).filter(s => s));
                 }
                 data.services = selectedServices.join(', ');
-
-                // Business hours
                 const weekday = document.getElementById('hours_weekday').value;
                 const weekend = document.getElementById('hours_weekend').value;
                 data.business_hours = `Monday-Friday: ${weekday}, Saturday-Sunday: ${weekend}`;
@@ -621,7 +1526,6 @@
         async function saveStep(step) {
             const data = collectStepData(step);
             Object.assign(formData, data);
-
             try {
                 const response = await fetch(`/api/onboarding/${businessId}/step`, {
                     method: 'POST',
@@ -636,119 +1540,44 @@
         }
 
         async function completeOnboarding() {
-            document.getElementById('loadingModal').classList.remove('hidden');
-
+            document.getElementById('loadingModal').classList.add('visible');
             try {
                 const response = await fetch(`/api/onboarding/${businessId}/complete`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
                 const data = await response.json();
-
                 if (data.success) {
-                    window.location.href = data.redirect || '/dashboard';
+                    window.location.href = data.redirect || '/dashboard.html';
                 } else {
                     alert('Error creating agent: ' + (data.error || 'Unknown error'));
-                    document.getElementById('loadingModal').classList.add('hidden');
+                    document.getElementById('loadingModal').classList.remove('visible');
                 }
             } catch (e) {
                 alert('Error: ' + e.message);
-                document.getElementById('loadingModal').classList.add('hidden');
+                document.getElementById('loadingModal').classList.remove('visible');
             }
         }
 
         function updateSummary() {
-            const summary = document.getElementById('summary');
             const industrySelect = document.getElementById('industry');
             const industryText = industrySelect.options[industrySelect.selectedIndex]?.text || formData.industry || 'Not set';
-
             const appointmentTypes = formData.appointment_types || [];
             const callModeText = formData.call_mode === 'takeover' ? 'Full Takeover' : 'Call Forwarding';
 
-            summary.innerHTML = `
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Business</span>
-                    <span class="font-medium text-gray-900">${formData.name || 'Not set'}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Industry</span>
-                    <span class="font-medium text-gray-900">${industryText}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">AI Agent</span>
-                    <span class="font-medium text-gray-900">${formData.agent_name || 'Alex'} (${formData.agent_voice || 'Rachel'})</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Call Mode</span>
-                    <span class="font-medium text-gray-900">${callModeText}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Services</span>
-                    <span class="font-medium text-gray-900">${formData.services ? formData.services.split(',').length + ' selected' : 'None'}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Appointment types</span>
-                    <span class="font-medium text-gray-900">${appointmentTypes.length} enabled</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Emergency dispatch</span>
-                    <span class="font-medium text-gray-900">${formData.emergency_dispatch ? 'Enabled' : 'Off'}</span>
-                </div>
+            document.getElementById('summary').innerHTML = `
+                <div class="summary-item"><span class="summary-label">Business</span><span class="summary-value">${formData.name || 'Not set'}</span></div>
+                <div class="summary-item"><span class="summary-label">Industry</span><span class="summary-value">${industryText}</span></div>
+                <div class="summary-item"><span class="summary-label">AI Agent</span><span class="summary-value">${formData.agent_name || 'Alex'} (${formData.agent_voice || 'Rachel'})</span></div>
+                <div class="summary-item"><span class="summary-label">Call Mode</span><span class="summary-value">${callModeText}</span></div>
+                <div class="summary-item"><span class="summary-label">Services</span><span class="summary-value">${formData.services ? formData.services.split(',').length + ' selected' : 'None'}</span></div>
+                <div class="summary-item"><span class="summary-label">Appointment types</span><span class="summary-value">${appointmentTypes.length} enabled</span></div>
+                <div class="summary-item"><span class="summary-label">Emergency dispatch</span><span class="summary-value">${formData.emergency_dispatch ? 'Enabled' : 'Off'}</span></div>
             `;
         }
 
-        // Voice selection handling
-        document.querySelectorAll('.voice-option').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.voice-option').forEach(opt => {
-                    opt.classList.remove('border-primary-500', 'bg-primary-50');
-                    opt.classList.add('border-gray-200');
-                    opt.querySelector('.check-icon').classList.add('hidden');
-                });
-
-                option.classList.remove('border-gray-200');
-                option.classList.add('border-primary-500', 'bg-primary-50');
-                option.querySelector('.check-icon').classList.remove('hidden');
-            });
-        });
-
-        // Call mode selection handling
-        document.querySelectorAll('.call-mode-option').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.call-mode-option').forEach(opt => {
-                    opt.classList.remove('border-primary-500', 'bg-primary-50');
-                    opt.classList.add('border-gray-200');
-                    opt.querySelector('.check-icon').classList.add('hidden');
-                });
-
-                option.classList.remove('border-gray-200');
-                option.classList.add('border-primary-500', 'bg-primary-50');
-                option.querySelector('.check-icon').classList.remove('hidden');
-
-                // Show/hide forwarding options based on mode
-                const mode = option.dataset.mode;
-                const forwardingSection = document.getElementById('forwardingSection');
-                if (mode === 'forwarding') {
-                    forwardingSection.classList.remove('hidden');
-                } else {
-                    forwardingSection.classList.add('hidden');
-                }
-            });
-        });
-
-        // Emergency dispatch toggle
-        document.getElementById('emergency_dispatch').addEventListener('change', (e) => {
-            const onCallSection = document.getElementById('onCallSection');
-            if (e.target.checked) {
-                onCallSection.classList.remove('hidden');
-            } else {
-                onCallSection.classList.add('hidden');
-            }
-        });
-
         document.getElementById('nextBtn').addEventListener('click', async () => {
             await saveStep(currentStep);
-
             if (currentStep === totalSteps) {
                 await completeOnboarding();
             } else {

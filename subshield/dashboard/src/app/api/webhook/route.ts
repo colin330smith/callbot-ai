@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
 
       // Send intake email via Resend
       if (RESEND_API_KEY) {
+        console.log('Sending email to:', customerEmail);
         const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'SubShield <hello@trysubshield.com>',
+            from: 'Colin from SubShield <colin@trysubshield.com>',
             to: customerEmail,
             subject: "You're In - Let's Review Your Contract",
             html: `
@@ -110,10 +111,15 @@ export async function POST(req: NextRequest) {
           }),
         });
 
+        const emailResult = await emailResponse.json();
+        console.log('Resend response:', emailResult);
         if (!emailResponse.ok) {
-          const error = await emailResponse.text();
-          console.error('Resend error:', error);
+          console.error('Resend error:', emailResult);
+        } else {
+          console.log('Email sent successfully to:', customerEmail);
         }
+      } else {
+        console.log('No RESEND_API_KEY configured');
       }
 
       // Store the contract in our database (via API call to dashboard)

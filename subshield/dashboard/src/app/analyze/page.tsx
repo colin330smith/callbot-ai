@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, Suspense } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useSearchParams } from 'next/navigation';
+import { trackAnalytics, usePageTracking } from '@/components/Analytics';
 
 interface PreviewAnalysis {
   riskScore: number;
@@ -43,6 +44,8 @@ interface Issue {
 
 function AnalyzePageContent() {
   const searchParams = useSearchParams();
+  usePageTracking(); // Track page views
+
   const [file, setFile] = useState<File | null>(null);
   const [contractText, setContractText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -61,6 +64,9 @@ function AnalyzePageContent() {
 
     if (paid === 'true' && sessionId) {
       setIsPaid(true);
+      // Track successful purchase conversion
+      trackAnalytics.purchaseCompleted();
+
       // Restore contract text from localStorage
       const savedText = localStorage.getItem('pendingContractText');
       const savedPreview = localStorage.getItem('pendingPreviewAnalysis');
@@ -83,6 +89,10 @@ function AnalyzePageContent() {
     const uploadedFile = acceptedFiles[0];
     if (!uploadedFile) return;
 
+    // Track contract upload
+    const fileExtension = uploadedFile.name.split('.').pop() || 'unknown';
+    trackAnalytics.contractUploaded(fileExtension, uploadedFile.size);
+
     setFile(uploadedFile);
     setError('');
     setPreviewAnalysis(null);
@@ -101,6 +111,7 @@ function AnalyzePageContent() {
       const parseResult = await parseResponse.json();
 
       if (!parseResponse.ok) {
+        trackAnalytics.errorOccurred('parse_error', parseResult.error || 'Failed to parse document');
         throw new Error(parseResult.error || 'Failed to parse document');
       }
 
@@ -131,6 +142,7 @@ function AnalyzePageContent() {
   const runPreviewAnalysis = async (text: string) => {
     setLoading(true);
     setError('');
+    trackAnalytics.previewStarted();
 
     try {
       const response = await fetch('/api/analyze', {
@@ -142,11 +154,13 @@ function AnalyzePageContent() {
       const result = await response.json();
 
       if (!response.ok) {
+        trackAnalytics.errorOccurred('analysis_error', result.error || 'Analysis failed');
         throw new Error(result.error || 'Analysis failed');
       }
 
       setPreviewAnalysis(result.analysis);
       setShowPaywall(true);
+      trackAnalytics.previewCompleted(result.analysis.riskScore, result.analysis.recommendation);
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed');
@@ -171,11 +185,13 @@ function AnalyzePageContent() {
       const result = await response.json();
 
       if (!response.ok) {
+        trackAnalytics.errorOccurred('full_analysis_error', result.error || 'Analysis failed');
         throw new Error(result.error || 'Analysis failed');
       }
 
       setFullAnalysis(result.analysis);
       setPreviewAnalysis(null);
+      trackAnalytics.fullReportViewed();
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed');
@@ -190,11 +206,17 @@ function AnalyzePageContent() {
       return;
     }
 
+    // Track unlock intent (conversion funnel)
+    trackAnalytics.unlockClicked();
+
     // Save state to localStorage before redirect
     localStorage.setItem('pendingContractText', contractText);
     localStorage.setItem('pendingPreviewAnalysis', JSON.stringify(previewAnalysis));
 
     try {
+      // Track checkout started
+      trackAnalytics.checkoutStarted(email);
+
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -207,6 +229,7 @@ function AnalyzePageContent() {
       const { url, error } = await response.json();
 
       if (error) {
+        trackAnalytics.errorOccurred('checkout_error', error);
         throw new Error(error);
       }
 

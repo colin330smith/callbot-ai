@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -8,27 +9,38 @@ export async function POST(req: NextRequest) {
     const body = await req.text();
     const signature = req.headers.get('stripe-signature');
 
-    // For now, we'll skip signature verification in development
-    // In production, you should verify the webhook signature
+    let event: Stripe.Event;
 
-    const event = JSON.parse(body);
+    // Verify webhook signature in production
+    if (STRIPE_WEBHOOK_SECRET && signature) {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+      try {
+        event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
+      } catch (err) {
+        console.error('Webhook signature verification failed:', err);
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+      }
+    } else {
+      // Fallback for development/testing
+      event = JSON.parse(body);
+    }
 
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
+      const session = event.data.object as Stripe.Checkout.Session;
 
-      const customerEmail = session.customer_details?.email;
+      const customerEmail = session.customer_details?.email || session.customer_email;
       const customerName = session.customer_details?.name || 'there';
       const paymentId = session.payment_intent;
       const amountPaid = (session.amount_total || 0) / 100;
 
       if (!customerEmail) {
-        console.error('No customer email found');
+        console.error('No customer email found in session');
         return NextResponse.json({ error: 'No email' }, { status: 400 });
       }
 
-      // Send intake email via Resend
+      // Send confirmation email via Resend
       if (RESEND_API_KEY) {
-        console.log('Sending email to:', customerEmail);
+        console.log('Sending confirmation email to:', customerEmail);
         const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -36,73 +48,59 @@ export async function POST(req: NextRequest) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'Colin from SubShield <colin@trysubshield.com>',
+            from: 'SubShield <colin@trysubshield.com>',
             to: customerEmail,
-            subject: "You're In - Let's Review Your Contract",
+            subject: 'Your SubShield Contract Analysis is Ready',
             html: `
 <!DOCTYPE html>
 <html>
 <head>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: #1e40af; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
-    .button { display: inline-block; background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-    .step { background: white; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #1e40af; }
-    .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+    .header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
+    .button { display: inline-block; background: #1e40af; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; }
+    .footer { background: #f9fafb; padding: 20px 30px; border-radius: 0 0 8px 8px; border: 1px solid #e5e7eb; border-top: none; text-align: center; color: #666; font-size: 14px; }
+    .highlight { background: #dbeafe; padding: 15px; border-radius: 6px; margin: 20px 0; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1 style="margin:0;">SubShield</h1>
-      <p style="margin:10px 0 0 0; opacity: 0.9;">Contract Analysis for Subcontractors</p>
+      <h1 style="margin:0; font-size: 28px;">SubShield</h1>
+      <p style="margin:10px 0 0 0; opacity: 0.9;">Contract Risk Analysis</p>
     </div>
     <div class="content">
       <p>Hi ${customerName.split(' ')[0]},</p>
 
-      <p>Thank you for trusting SubShield with your contract review. I'm ready to analyze your subcontract and identify any risky clauses that could cost you money.</p>
+      <p>Thank you for your purchase! Your full contract analysis report is now available.</p>
 
-      <p><strong>To get started, I need your contract.</strong></p>
-
-      <div class="step">
-        <strong>Step 1:</strong> Reply to this email with your subcontract attached (PDF, Word, or scanned images all work)
+      <div class="highlight">
+        <p style="margin: 0;"><strong>What happens next:</strong></p>
+        <p style="margin: 10px 0 0 0;">Your full analysis should be loading automatically in your browser. If it's not showing, you can return to the analysis page and upload your contract again - as a paid customer, you'll see the complete report immediately.</p>
       </div>
 
-      <div class="step">
-        <strong>Step 2:</strong> Include the following info:
-        <ul style="margin: 10px 0;">
-          <li>General Contractor name</li>
-          <li>Project name/location</li>
-          <li>Your trade</li>
-          <li>Contract value (approximate is fine)</li>
-          <li>Any specific concerns you have</li>
-        </ul>
-      </div>
-
-      <div class="step">
-        <strong>Step 3:</strong> I'll deliver your comprehensive risk analysis within 24 hours
-      </div>
-
-      <p>Your report will include:</p>
+      <p>Your detailed report includes:</p>
       <ul>
-        <li>Risk score (1-10) with explanation</li>
-        <li>Every problematic clause identified</li>
-        <li>Plain-English explanation of what each clause means</li>
-        <li>Word-for-word negotiation scripts</li>
-        <li>State-specific legal considerations</li>
-        <li>Final recommendation (sign, negotiate, or walk)</li>
+        <li><strong>Complete risk assessment</strong> with severity ratings</li>
+        <li><strong>Every risky clause</strong> quoted verbatim from your contract</li>
+        <li><strong>Plain-English explanations</strong> of what each clause means</li>
+        <li><strong>Word-for-word negotiation scripts</strong> you can use today</li>
+        <li><strong>Contract summary</strong> with key terms at a glance</li>
       </ul>
 
-      <p><strong>Just reply to this email with your contract to get started.</strong></p>
+      <p><strong>Pro tip:</strong> Use the "Print / Save PDF" button at the bottom of your report to keep a copy for your records or share with your attorney.</p>
 
-      <p>Looking forward to protecting your business,</p>
+      <p>If you have any questions about your report or need clarification on any clause, just reply to this email.</p>
+
+      <p>Protecting your business,</p>
       <p><strong>Colin Smith</strong><br>Founder, SubShield</p>
     </div>
     <div class="footer">
-      <p>SubShield | Contract Analysis for Subcontractors</p>
-      <p>Questions? Just reply to this email.</p>
+      <p>SubShield | Protecting Subcontractors from Bad Contracts</p>
+      <p style="margin: 5px 0;">Questions? Reply to this email.</p>
+      <p style="margin: 5px 0; font-size: 12px; color: #999;">Order ID: ${paymentId}</p>
     </div>
   </div>
 </body>
@@ -112,19 +110,14 @@ export async function POST(req: NextRequest) {
         });
 
         const emailResult = await emailResponse.json();
-        console.log('Resend response:', emailResult);
         if (!emailResponse.ok) {
           console.error('Resend error:', emailResult);
         } else {
-          console.log('Email sent successfully to:', customerEmail);
+          console.log('Confirmation email sent to:', customerEmail);
         }
-      } else {
-        console.log('No RESEND_API_KEY configured');
       }
 
-      // Store the contract in our database (via API call to dashboard)
-      // For now, we'll log it - you can view in Vercel logs
-      console.log('New SubShield order:', {
+      console.log('SubShield purchase completed:', {
         email: customerEmail,
         name: customerName,
         paymentId,

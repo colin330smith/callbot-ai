@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
+// Contract size limits
+const MAX_CONTRACT_LENGTH = 200000; // ~200k characters
+const MIN_CONTRACT_LENGTH = 100;
 
 const ANALYSIS_PROMPT = `You are an expert construction contract attorney who specializes in protecting subcontractors. Analyze this subcontract and identify every clause that could harm the subcontractor.
 
@@ -30,7 +35,7 @@ At the end, provide:
 2. EXECUTIVE SUMMARY: 2-3 sentences on the biggest concerns
 3. RECOMMENDATION: SIGN (low risk), NEGOTIATE (medium risk), or WALK AWAY (high risk)
 
-Format your response as JSON with this structure:
+IMPORTANT: Return ONLY valid JSON with no additional text. Use this exact structure:
 {
   "riskScore": 8,
   "recommendation": "NEGOTIATE",
@@ -43,8 +48,8 @@ Format your response as JSON with this structure:
       "negotiationScript": "suggested replacement language"
     }
   ],
-  "warningIssues": [...],
-  "cautionIssues": [...],
+  "warningIssues": [],
+  "cautionIssues": [],
   "contractSummary": {
     "projectName": "",
     "contractValue": "",
@@ -59,35 +64,87 @@ Format your response as JSON with this structure:
 CONTRACT TO ANALYZE:
 `;
 
-export async function POST(req: NextRequest) {
-  try {
-    const { contractText, preview } = await req.json();
+const PREVIEW_PROMPT = `You are a construction contract attorney. Quickly analyze this subcontract and identify the top risks.
 
-    if (!contractText) {
+IMPORTANT: Return ONLY valid JSON with no additional text:
+{
+  "riskScore": 8,
+  "recommendation": "NEGOTIATE",
+  "executiveSummary": "2-3 sentences about the biggest concerns",
+  "topThreeIssues": [
+    {"title": "Issue name", "severity": "CRITICAL", "preview": "One sentence description"}
+  ],
+  "totalIssuesFound": 5
+}
+
+The severity must be one of: CRITICAL, WARNING, or CAUTION.
+The recommendation must be one of: SIGN, NEGOTIATE, or WALK AWAY.
+
+CONTRACT:
+`;
+
+export async function POST(req: NextRequest) {
+  const startTime = Date.now();
+
+  try {
+    // Rate limiting
+    const clientIP = getClientIP(req);
+    const rateLimit = checkRateLimit(`analyze:${clientIP}`, RATE_LIMITS.analyze);
+
+    if (!rateLimit.success) {
+      const retryAfter = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment before trying again.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(retryAfter),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': String(rateLimit.resetTime),
+          },
+        }
+      );
+    }
+
+    // Parse and validate request body
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+
+    const { contractText, preview } = body;
+
+    // Validate contract text
+    if (!contractText || typeof contractText !== 'string') {
       return NextResponse.json({ error: 'No contract text provided' }, { status: 400 });
     }
 
-    if (!ANTHROPIC_API_KEY) {
-      return NextResponse.json({ error: 'API not configured' }, { status: 500 });
+    if (contractText.length < MIN_CONTRACT_LENGTH) {
+      return NextResponse.json({
+        error: 'Contract text too short. Please provide a complete contract document.'
+      }, { status: 400 });
     }
 
-    // For preview mode, we use a shorter prompt to just get the risk score and top 3 issues
+    if (contractText.length > MAX_CONTRACT_LENGTH) {
+      return NextResponse.json({
+        error: 'Contract too long. Please ensure the document is under 200,000 characters.'
+      }, { status: 400 });
+    }
+
+    if (!ANTHROPIC_API_KEY) {
+      console.error('ANTHROPIC_API_KEY not configured');
+      return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
+    }
+
+    // Build prompt based on mode
+    const textToAnalyze = preview ? contractText.substring(0, 20000) : contractText;
     const prompt = preview
-      ? `Analyze this subcontract quickly. Return JSON with:
-{
-  "riskScore": 1-10,
-  "recommendation": "SIGN" or "NEGOTIATE" or "WALK AWAY",
-  "executiveSummary": "2-3 sentences",
-  "topThreeIssues": [
-    {"title": "Issue name", "severity": "CRITICAL/WARNING/CAUTION", "preview": "One sentence description"}
-  ],
-  "totalIssuesFound": number
-}
+      ? PREVIEW_PROMPT + textToAnalyze
+      : ANALYSIS_PROMPT + textToAnalyze;
 
-CONTRACT:
-${contractText.substring(0, 15000)}`
-      : ANALYSIS_PROMPT + contractText;
-
+    // Call Anthropic API
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -97,7 +154,7 @@ ${contractText.substring(0, 15000)}`
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: preview ? 1000 : 8000,
+        max_tokens: preview ? 1500 : 8000,
         messages: [
           {
             role: 'user',
@@ -108,40 +165,88 @@ ${contractText.substring(0, 15000)}`
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('Anthropic API error:', error);
-      return NextResponse.json({ error: 'Analysis failed' }, { status: 500 });
+      const errorText = await response.text();
+      console.error('Anthropic API error:', response.status, errorText);
+
+      if (response.status === 429) {
+        return NextResponse.json({ error: 'Service busy. Please try again in a moment.' }, { status: 429 });
+      }
+      if (response.status === 401) {
+        console.error('Invalid API key');
+        return NextResponse.json({ error: 'Service configuration error' }, { status: 503 });
+      }
+
+      return NextResponse.json({ error: 'Analysis failed. Please try again.' }, { status: 500 });
     }
 
     const result = await response.json();
+
+    if (!result.content || !result.content[0] || !result.content[0].text) {
+      console.error('Unexpected API response structure:', result);
+      return NextResponse.json({ error: 'Unexpected response format' }, { status: 500 });
+    }
+
     const analysisText = result.content[0].text;
 
     // Parse the JSON from the response
     let analysis;
     try {
-      // Find JSON in the response (it might have markdown code blocks)
-      const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+      // Try to find JSON in the response (handle markdown code blocks)
+      let jsonStr = analysisText;
+
+      // Remove markdown code blocks if present
+      const codeBlockMatch = analysisText.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (codeBlockMatch) {
+        jsonStr = codeBlockMatch[1];
+      }
+
+      // Find the JSON object
+      const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         analysis = JSON.parse(jsonMatch[0]);
       } else {
         throw new Error('No JSON found in response');
       }
+
+      // Validate required fields exist
+      if (typeof analysis.riskScore !== 'number') {
+        analysis.riskScore = 5; // Default to medium risk
+      }
+      if (!analysis.recommendation) {
+        analysis.recommendation = 'NEGOTIATE';
+      }
+      if (!analysis.executiveSummary) {
+        analysis.executiveSummary = 'Analysis completed. Review the identified issues carefully.';
+      }
+
+      // Ensure arrays exist for full analysis
+      if (!preview) {
+        analysis.criticalIssues = analysis.criticalIssues || [];
+        analysis.warningIssues = analysis.warningIssues || [];
+        analysis.cautionIssues = analysis.cautionIssues || [];
+        analysis.contractSummary = analysis.contractSummary || {};
+      }
+
     } catch (parseError) {
-      console.error('Failed to parse analysis:', parseError);
+      console.error('Failed to parse analysis JSON:', parseError);
+      console.error('Raw response:', analysisText.substring(0, 500));
       return NextResponse.json({
-        error: 'Failed to parse analysis',
-        raw: analysisText
+        error: 'Failed to process analysis results. Please try again.'
       }, { status: 500 });
     }
+
+    const duration = Date.now() - startTime;
+    console.log(`Analysis completed in ${duration}ms (preview: ${!!preview})`);
 
     return NextResponse.json({
       success: true,
       analysis,
-      preview: !!preview
+      preview: !!preview,
+      processingTime: duration
     });
 
   } catch (error) {
     console.error('Analysis error:', error);
-    return NextResponse.json({ error: 'Analysis failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Analysis failed. Please try again.' }, { status: 500 });
   }
 }

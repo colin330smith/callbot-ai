@@ -5,11 +5,14 @@ import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 declare global {
   interface Window {
     gtag: (command: string, ...args: unknown[]) => void;
     dataLayer: unknown[];
+    fbq: (command: string, event: string, params?: Record<string, unknown>) => void;
+    _fbq: unknown;
   }
 }
 
@@ -34,6 +37,12 @@ export const trackEvent = (eventName: string, parameters?: Record<string, unknow
   window.gtag('event', eventName, parameters);
 };
 
+// Meta Pixel event tracking
+export const trackMetaEvent = (eventName: string, params?: Record<string, unknown>) => {
+  if (typeof window.fbq !== 'function') return;
+  window.fbq('track', eventName, params);
+};
+
 // Specific conversion events for SubShield
 export const trackAnalytics = {
   // Track when user uploads a contract
@@ -42,6 +51,11 @@ export const trackAnalytics = {
       event_category: 'engagement',
       file_type: fileType,
       file_size_kb: Math.round(fileSize / 1024),
+    });
+    // Meta Pixel: Custom event for contract upload
+    trackMetaEvent('ViewContent', {
+      content_name: 'Contract Upload',
+      content_category: 'Engagement',
     });
   },
 
@@ -59,12 +73,25 @@ export const trackAnalytics = {
       risk_score: riskScore,
       recommendation: recommendation,
     });
+    // Meta Pixel: View content complete
+    trackMetaEvent('ViewContent', {
+      content_name: 'Contract Preview',
+      content_category: 'Analysis',
+      value: riskScore,
+    });
   },
 
   // Track when user clicks to unlock full report (conversion intent)
   unlockClicked: () => {
     trackEvent('unlock_clicked', {
       event_category: 'conversion',
+    });
+    // Meta Pixel: Add to cart intent
+    trackMetaEvent('AddToCart', {
+      content_name: 'Full Contract Analysis',
+      content_type: 'product',
+      value: 147.00,
+      currency: 'USD',
     });
   },
 
@@ -73,13 +100,21 @@ export const trackAnalytics = {
     trackEvent('begin_checkout', {
       event_category: 'conversion',
       currency: 'USD',
-      value: 47.00,
+      value: 147.00,
       items: [{
         item_id: 'contract_analysis',
         item_name: 'SubShield Full Contract Analysis',
-        price: 47.00,
+        price: 147.00,
         quantity: 1,
       }],
+    });
+    // Meta Pixel: Initiate checkout
+    trackMetaEvent('InitiateCheckout', {
+      content_name: 'Full Contract Analysis',
+      content_type: 'product',
+      value: 147.00,
+      currency: 'USD',
+      num_items: 1,
     });
   },
 
@@ -88,14 +123,21 @@ export const trackAnalytics = {
     trackEvent('purchase', {
       event_category: 'conversion',
       currency: 'USD',
-      value: 47.00,
+      value: 147.00,
       transaction_id: `ss_${Date.now()}`,
       items: [{
         item_id: 'contract_analysis',
         item_name: 'SubShield Full Contract Analysis',
-        price: 47.00,
+        price: 147.00,
         quantity: 1,
       }],
+    });
+    // Meta Pixel: Purchase event (main conversion)
+    trackMetaEvent('Purchase', {
+      content_name: 'Full Contract Analysis',
+      content_type: 'product',
+      value: 147.00,
+      currency: 'USD',
     });
   },
 
@@ -114,9 +156,26 @@ export const trackAnalytics = {
       error_message: errorMessage,
     });
   },
+
+  // Track email lead capture
+  emailCaptured: (source: string, riskScore?: number) => {
+    trackEvent('generate_lead', {
+      event_category: 'conversion',
+      lead_source: source,
+      risk_score: riskScore,
+      currency: 'USD',
+      value: 10.00, // Estimated lead value
+    });
+    // Meta Pixel: Lead event
+    trackMetaEvent('Lead', {
+      content_name: 'Email Capture',
+      value: 10.00,
+      currency: 'USD',
+    });
+  },
 };
 
-// Analytics Script Component
+// Google Analytics Script Component
 export function GoogleAnalytics() {
   if (!GA_MEASUREMENT_ID) {
     return null;
@@ -142,6 +201,55 @@ export function GoogleAnalytics() {
           `,
         }}
       />
+    </>
+  );
+}
+
+// Meta Pixel Script Component
+export function MetaPixel() {
+  if (!META_PIXEL_ID) {
+    return null;
+  }
+
+  return (
+    <>
+      <Script
+        id="meta-pixel"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${META_PIXEL_ID}');
+            fbq('track', 'PageView');
+          `,
+        }}
+      />
+      <noscript>
+        <img
+          height="1"
+          width="1"
+          style={{ display: 'none' }}
+          src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+          alt=""
+        />
+      </noscript>
+    </>
+  );
+}
+
+// Combined Analytics Component
+export function Analytics() {
+  return (
+    <>
+      <GoogleAnalytics />
+      <MetaPixel />
     </>
   );
 }

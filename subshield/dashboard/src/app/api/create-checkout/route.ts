@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { createApiErrorHandler } from '@/lib/error-reporting';
+
+const errorHandler = createApiErrorHandler('create-checkout');
 
 export async function POST(req: NextRequest) {
+  let body: { analysisId?: string; email?: string } | undefined;
+
   try {
     // Rate limiting - stricter for checkout to prevent abuse
     const clientIP = getClientIP(req);
@@ -21,14 +26,13 @@ export async function POST(req: NextRequest) {
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-    let body;
     try {
       body = await req.json();
     } catch {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
 
-    const { analysisId, email } = body;
+    const { analysisId, email } = body || {};
 
     // Validate email format
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -45,7 +49,7 @@ export async function POST(req: NextRequest) {
               name: 'SubShield Full Contract Analysis',
               description: 'Complete risk analysis with negotiation scripts',
             },
-            unit_amount: 4700, // $47.00
+            unit_amount: 14700, // $147.00
           },
           quantity: 1,
         },
@@ -55,7 +59,7 @@ export async function POST(req: NextRequest) {
       cancel_url: `${req.headers.get('origin')}/analyze?canceled=true`,
       customer_email: email,
       metadata: {
-        analysisId,
+        analysisId: analysisId || '',
         type: 'contract_analysis',
       },
     });
@@ -63,6 +67,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error('Stripe checkout error:', error);
+    errorHandler.capture(error instanceof Error ? error : new Error(String(error)), {
+      analysisId: body?.analysisId,
+    });
     return NextResponse.json({ error: 'Failed to create checkout' }, { status: 500 });
   }
 }

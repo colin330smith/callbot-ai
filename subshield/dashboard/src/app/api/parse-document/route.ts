@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { createApiErrorHandler } from '@/lib/error-reporting';
+
+const errorHandler = createApiErrorHandler('parse-document');
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pdfParse = require('pdf-parse');
@@ -150,6 +153,7 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Document parsing error:', error);
+    errorHandler.capture(error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({
       error: 'Failed to process document. Please try a different file format.'
     }, { status: 500 });

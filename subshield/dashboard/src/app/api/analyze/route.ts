@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { createApiErrorHandler } from '@/lib/error-reporting';
+
+const errorHandler = createApiErrorHandler('analyze');
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -85,6 +88,7 @@ CONTRACT:
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
+  let body: { contractText?: string; preview?: boolean } | undefined;
 
   try {
     // Rate limiting
@@ -107,14 +111,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Parse and validate request body
-    let body;
     try {
       body = await req.json();
     } catch {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 
-    const { contractText, preview } = body;
+    const { contractText, preview } = body || {};
 
     // Validate contract text
     if (!contractText || typeof contractText !== 'string') {
@@ -153,7 +156,7 @@ export async function POST(req: NextRequest) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-opus-4-5-20251101',
         max_tokens: preview ? 1500 : 8000,
         messages: [
           {
@@ -247,6 +250,10 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Analysis error:', error);
+    errorHandler.capture(error instanceof Error ? error : new Error(String(error)), {
+      preview: body?.preview,
+      contractLength: body?.contractText?.length,
+    });
     return NextResponse.json({ error: 'Analysis failed. Please try again.' }, { status: 500 });
   }
 }

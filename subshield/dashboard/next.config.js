@@ -2,6 +2,10 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Set turbopack root to this directory
+  turbopack: {
+    root: __dirname,
+  },
   // Security headers
   async headers() {
     return [

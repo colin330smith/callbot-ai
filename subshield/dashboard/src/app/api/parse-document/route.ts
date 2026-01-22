@@ -4,10 +4,28 @@ import { createApiErrorHandler } from '@/lib/error-reporting';
 
 const errorHandler = createApiErrorHandler('parse-document');
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require('pdf-parse');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const mammoth = require('mammoth');
+// Type for pdf-parse function
+type PdfParseFunction = (buffer: Buffer) => Promise<{ text: string }>;
+
+// Lazy load pdf-parse to avoid build-time issues with Turbopack
+let pdfParse: PdfParseFunction | null = null;
+async function getPdfParse(): Promise<PdfParseFunction> {
+  if (!pdfParse) {
+    // Use require for CommonJS module compatibility
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    pdfParse = require('pdf-parse') as PdfParseFunction;
+  }
+  return pdfParse;
+}
+
+// Lazy load mammoth
+let mammoth: typeof import('mammoth') | null = null;
+async function getMammoth() {
+  if (!mammoth) {
+    mammoth = await import('mammoth');
+  }
+  return mammoth;
+}
 
 // File size limits
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -77,7 +95,8 @@ export async function POST(req: NextRequest) {
 
     if (fileName.endsWith('.pdf')) {
       try {
-        const pdfData = await pdfParse(buffer);
+        const parser = await getPdfParse();
+        const pdfData = await parser(buffer);
         text = pdfData.text;
       } catch (pdfError) {
         console.error('PDF parsing error:', pdfError);
@@ -87,7 +106,8 @@ export async function POST(req: NextRequest) {
       }
     } else if (fileName.endsWith('.docx')) {
       try {
-        const result = await mammoth.extractRawText({ buffer });
+        const docParser = await getMammoth();
+        const result = await docParser.extractRawText({ buffer });
         text = result.value;
       } catch (docxError) {
         console.error('DOCX parsing error:', docxError);
@@ -97,7 +117,8 @@ export async function POST(req: NextRequest) {
       }
     } else if (fileName.endsWith('.doc')) {
       try {
-        const result = await mammoth.extractRawText({ buffer });
+        const docParser = await getMammoth();
+        const result = await docParser.extractRawText({ buffer });
         text = result.value;
       } catch {
         return NextResponse.json({

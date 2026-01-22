@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
 import { createApiErrorHandler } from '@/lib/error-reporting';
+import { createClient } from '@/lib/supabase-server';
+import type { Database } from '@/lib/database.types';
+
+type Subscription = Database['public']['Tables']['subscriptions']['Row'];
+type ContractInsert = Database['public']['Tables']['contracts']['Insert'];
 
 const errorHandler = createApiErrorHandler('analyze');
 
@@ -10,58 +15,161 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const MAX_CONTRACT_LENGTH = 200000; // ~200k characters
 const MIN_CONTRACT_LENGTH = 100;
 
-const ANALYSIS_PROMPT = `You are an expert construction contract attorney who specializes in protecting subcontractors. Analyze this subcontract and identify every clause that could harm the subcontractor.
+const ANALYSIS_PROMPT = `You are an expert construction contract analyst specializing in protecting subcontractors from predatory contract terms. Your analysis has saved subcontractors millions of dollars.
 
-For each risky clause found:
-1. Quote the EXACT contract language
-2. Explain in plain English what it means and why it's dangerous
-3. Rate severity: CRITICAL (red), WARNING (yellow), or CAUTION (blue)
-4. Provide specific word-for-word negotiation language to fix it
+## YOUR TASK
+Analyze this subcontractor contract and identify every clause that could harm the subcontractor across all 15 risk categories.
 
-CRITICAL issues are deal-breakers that could bankrupt a subcontractor.
-WARNING issues are significant risks that should be negotiated.
-CAUTION issues are minor concerns to be aware of.
+## ANALYSIS CATEGORIES
 
-Also identify:
-- Payment terms and potential cash flow issues
-- Insurance requirements and whether they're reasonable
-- Indemnification scope (especially if it's "broad form")
-- Liquidated damages and whether they're proportionate
-- Termination clauses and their fairness
-- Warranty periods and response requirements
-- Change order processes
-- Delay and no-damage-for-delay clauses
-- Dispute resolution requirements
+### 1. PAYMENT TERMS
+- Pay-if-paid clauses (contractor only pays if they get paid) - CRITICAL
+- Pay-when-paid clauses (timing tied to upstream payment)
+- Payment timeline (net 30, 45, 60, 90?)
+- Conditions that could delay or prevent payment
+- Invoice requirements that could be used to reject payment
+- Early payment discounts that pressure cash flow
 
-At the end, provide:
-1. OVERALL RISK SCORE: 1-10 (10 = extremely risky, don't sign)
-2. EXECUTIVE SUMMARY: 2-3 sentences on the biggest concerns
-3. RECOMMENDATION: SIGN (low risk), NEGOTIATE (medium risk), or WALK AWAY (high risk)
+### 2. RETAINAGE
+- Retainage percentage (5% is standard, anything above is aggressive)
+- Release conditions (substantial completion? final completion?)
+- Timeline for release after conditions met
+- Provisions that could extend retainage hold
+Calculate: On a $100K contract, show the actual dollar amount held
 
-IMPORTANT: Return ONLY valid JSON with no additional text. Use this exact structure:
+### 3. LIEN RIGHTS
+- Lien waiver requirements (conditional vs unconditional)
+- Timing of waiver requirements (before payment received?)
+- Waiver scope (just this payment or all prior work?)
+- Provisions limiting statutory lien rights
+- Notice requirements that could void lien rights
+
+### 4. INDEMNIFICATION
+- Scope (whose negligence is covered?)
+- Whether mutual or one-sided
+- "Broad form" indemnification (including GC's own negligence) - CRITICAL
+- Insurance implications
+- Survival clauses (how long does it last?)
+
+### 5. INSURANCE REQUIREMENTS
+- Coverage amounts (reasonable vs excessive)
+- Additional insured requirements
+- Waiver of subrogation
+- Primary/non-contributory language
+- Hard-to-obtain coverage types
+Estimate additional insurance cost if requirements exceed standard
+
+### 6. CHANGE ORDERS
+- Written approval requirements before work
+- Time limits for submitting change requests (7 days? 3 days?)
+- Who can authorize changes
+- Pricing methodology for changes
+- Provisions resulting in uncompensated extra work
+
+### 7. SCOPE CREEP PROTECTION
+- Scope definition clarity
+- "Including but not limited to" expansive language
+- Implied work provisions
+- Coordination requirements expanding scope
+- Clean-up and protection responsibilities
+
+### 8. SCHEDULE & DELAYS
+- Liquidated damages amounts - CRITICAL if excessive
+- No-damage-for-delay clauses - CRITICAL
+- Acceleration requirements
+- Float ownership
+- Notice requirements for delays
+Calculate maximum exposure under liquidated damages
+
+### 9. TERMINATION
+- Termination for convenience (can they cancel anytime?)
+- Cure periods for alleged default
+- Payment upon termination
+- Return of materials/equipment
+- Survival of obligations
+
+### 10. DISPUTE RESOLUTION
+- Mandatory arbitration vs litigation
+- Arbitration rules and costs
+- Venue/location requirements
+- Attorney fee provisions
+- Mediation requirements
+- Limitation of actions periods
+
+### 11. WARRANTY
+- Warranty period length (compare to 1-year standard)
+- Scope of warranty obligations
+- Call-back and repair requirements
+- Extended warranties beyond statutory
+- Warranty tied to upstream obligations
+
+### 12. SAFETY & COMPLIANCE
+- Safety program requirements
+- Drug testing requirements
+- OSHA compliance obligations
+- Documentation requirements
+- Penalties for non-compliance
+
+### 13. ASSIGNMENT & SUBCONTRACTING
+- Restrictions on assigning contract
+- Restrictions on sub-subcontractors
+- Approval requirements
+- Flow-down provisions
+
+### 14. DOCUMENT PRECEDENCE
+- Order of precedence for contract documents
+- Which document controls in conflicts
+- Incorporation by reference of unseen documents
+
+### 15. HIDDEN TRAPS
+- Any other provisions creating unexpected liability
+- Provisions limiting legitimate claims
+- Clauses that may be unenforceable but create chilling effects
+- Conflicts with state law
+
+## SEVERITY RATINGS
+- CRITICAL: Deal-breakers that could bankrupt the subcontractor. Stop and negotiate or walk away.
+- WARNING: Significant financial/legal risk. Should negotiate before signing.
+- CAUTION: Minor concerns to be aware of. Acceptable if other terms are good.
+
+## OUTPUT FORMAT
+Return ONLY valid JSON:
 {
   "riskScore": 8,
   "recommendation": "NEGOTIATE",
-  "executiveSummary": "This contract contains several concerning clauses...",
+  "executiveSummary": "2-3 sentences on the biggest concerns with estimated financial exposure",
+  "estimatedExposure": "$50,000 - $150,000",
   "criticalIssues": [
     {
       "title": "Pay-If-Paid Clause",
-      "clauseText": "exact quote from contract",
-      "explanation": "plain English explanation",
-      "negotiationScript": "suggested replacement language"
+      "category": "Payment Terms",
+      "clauseLocation": "Section 4.2, Page 8",
+      "clauseText": "EXACT quote from the contract",
+      "explanation": "Plain English: what this means and why it's dangerous",
+      "worstCase": "What could happen if you sign this",
+      "negotiationScript": "Word-for-word script to discuss with GC: 'Hey [GC], I noticed section 4.2 has a pay-if-paid clause. In my experience, this puts all the payment risk on me even though I have no relationship with the owner. Could we change this to pay-when-paid with a 60-day maximum delay? Here's the language I'd suggest: [replacement text]'"
     }
   ],
   "warningIssues": [],
   "cautionIssues": [],
+  "negotiationPriority": [
+    {"issue": "Pay-if-paid", "priority": 1, "difficulty": "Medium", "reason": "High risk, commonly negotiable"},
+    {"issue": "Broad indemnification", "priority": 2, "difficulty": "Hard", "reason": "Critical risk, GCs often resist"}
+  ],
   "contractSummary": {
     "projectName": "",
+    "gcName": "",
     "contractValue": "",
     "paymentTerms": "",
     "retainage": "",
+    "retainageAmount": "",
     "liquidatedDamages": "",
+    "maxLDExposure": "",
     "warrantyPeriod": "",
-    "insuranceRequirements": ""
-  }
+    "insuranceRequirements": "",
+    "disputeVenue": ""
+  },
+  "stateSpecificNotes": "If state is identifiable, note relevant lien deadlines, anti-indemnity statutes, pay-if-paid enforceability"
 }
 
 CONTRACT TO ANALYZE:
@@ -88,7 +196,7 @@ CONTRACT:
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
-  let body: { contractText?: string; preview?: boolean } | undefined;
+  let body: { contractText?: string; preview?: boolean; filename?: string; gcName?: string; projectName?: string } | undefined;
 
   try {
     // Rate limiting
@@ -117,7 +225,51 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 
-    const { contractText, preview } = body || {};
+    const { contractText, preview, filename, gcName, projectName } = body || {};
+
+    // Check authentication and subscription
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    let subscription: Subscription | null = null;
+    let isAuthenticated = false;
+
+    if (user) {
+      isAuthenticated = true;
+
+      // Get user's subscription
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      subscription = sub as Subscription | null;
+
+      // Check usage limits for full analysis (not preview)
+      if (!preview && subscription) {
+        const currentSub = subscription; // For TypeScript narrowing
+        const isUnlimited = currentSub.contracts_limit === -1;
+
+        if (!isUnlimited && currentSub.contracts_used_this_month >= currentSub.contracts_limit) {
+          return NextResponse.json({
+            error: 'Monthly contract limit reached. Please upgrade your plan for more analyses.',
+            limitReached: true,
+            currentUsage: currentSub.contracts_used_this_month,
+            limit: currentSub.contracts_limit,
+            tier: currentSub.tier,
+          }, { status: 403 });
+        }
+      }
+    }
+
+    // For non-preview analysis, require authentication
+    if (!preview && !isAuthenticated) {
+      return NextResponse.json({
+        error: 'Please sign in to perform a full contract analysis.',
+        requiresAuth: true,
+      }, { status: 401 });
+    }
 
     // Validate contract text
     if (!contractText || typeof contractText !== 'string') {
@@ -241,11 +393,63 @@ export async function POST(req: NextRequest) {
     const duration = Date.now() - startTime;
     console.log(`Analysis completed in ${duration}ms (preview: ${!!preview})`);
 
+    // For full analysis with authenticated user, save contract and increment usage
+    let contractId = null;
+    if (!preview && user && subscription) {
+      try {
+        // Save contract to database
+        const contractData: ContractInsert = {
+          user_id: user.id,
+          filename: filename || 'Untitled Contract',
+          contract_text: contractText,
+          gc_name: analysis.contractSummary?.gcName || gcName || null,
+          project_name: analysis.contractSummary?.projectName || projectName || null,
+          risk_score: analysis.riskScore,
+          recommendation: analysis.recommendation,
+          executive_summary: analysis.executiveSummary,
+          estimated_exposure: analysis.estimatedExposure || null,
+          analysis_json: analysis,
+        };
+        const { data: savedContract, error: saveError } = await supabase
+          .from('contracts')
+          .insert(contractData as never)
+          .select('id')
+          .single();
+
+        if (saveError) {
+          console.error('Error saving contract:', saveError);
+        } else if (savedContract) {
+          contractId = (savedContract as { id: string }).id;
+
+          // Increment usage counter
+          const { error: updateError } = await supabase
+            .from('subscriptions')
+            .update({
+              contracts_used_this_month: subscription.contracts_used_this_month + 1,
+            } as never)
+            .eq('user_id', user.id);
+
+          if (updateError) {
+            console.error('Error updating usage:', updateError);
+          }
+        }
+      } catch (dbError) {
+        console.error('Database error:', dbError);
+        // Continue - analysis was successful, just couldn't save
+      }
+    }
+
     return NextResponse.json({
       success: true,
       analysis,
       preview: !!preview,
-      processingTime: duration
+      processingTime: duration,
+      contractId,
+      usage: subscription ? {
+        used: subscription.contracts_used_this_month + (preview ? 0 : 1),
+        limit: subscription.contracts_limit,
+        tier: subscription.tier,
+      } : null,
     });
 
   } catch (error) {

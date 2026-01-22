@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - SubShield</title>
+    <meta name="description" content="Contact SubShield for contract analysis support">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: #0f172a;
+            background: #fff;
+            font-size: 16px;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+        header {
+            background: #fff;
+            border-bottom: 1px solid #e7e5e4;
+            padding: 16px 0;
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: #1e293b;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-icon svg { width: 20px; height: 20px; fill: #fff; }
+        .logo-text { font-size: 18px; font-weight: 700; color: #1e293b; }
+        main { padding: 64px 0; }
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #0f172a;
+        }
+        .intro {
+            font-size: 18px;
+            color: #475569;
+            margin-bottom: 40px;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 16px;
+            color: #0f172a;
+        }
+        p, li {
+            color: #475569;
+            margin-bottom: 16px;
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-top: 40px;
+        }
+        @media (max-width: 600px) {
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+        .contact-card {
+            background: #fafaf9;
+            border: 1px solid #e7e5e4;
+            border-radius: 12px;
+            padding: 32px;
+        }
+        .contact-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 16px;
+        }
+        .contact-card p {
+            margin-bottom: 8px;
+        }
+        .contact-card a {
+            color: #059669;
+            text-decoration: none;
+        }
+        .contact-card a:hover {
+            text-decoration: underline;
+        }
+        .response-time {
+            background: #ecfdf5;
+            border: 1px solid #d1fae5;
+            border-radius: 8px;
+            padding: 16px 24px;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .response-time svg {
+            width: 24px;
+            height: 24px;
+            fill: #059669;
+        }
+        .response-time p {
+            margin: 0;
+            color: #065f46;
+            font-weight: 500;
+        }
+        footer {
+            background: #0f172a;
+            padding: 40px 0;
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            margin-top: 64px;
+        }
+        .footer-links { display: flex; gap: 24px; margin-top: 16px; }
+        .footer-links a { color: rgba(255,255,255,0.6); text-decoration: none; }
+        .footer-links a:hover { color: #fff; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                </div>
+                <span class="logo-text">SubShield</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Contact Us</h1>
+            <p class="intro">Have questions about our contract analysis services? Need help with an order? We're here to help.</p>
+
+            <div class="response-time">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <p>We typically respond within 24 hours</p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h3>Email Support</h3>
+                    <p><strong>General Inquiries:</strong></p>
+                    <p><a href="mailto:colin@trysubshield.com">colin@trysubshield.com</a></p>
+                    <p style="margin-top: 16px;"><strong>For:</strong></p>
+                    <p>Questions about services, pricing, or how it works</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Order Support</h3>
+                    <p><strong>Orders & Refunds:</strong></p>
+                    <p><a href="mailto:colin@trysubshield.com">colin@trysubshield.com</a></p>
+                    <p style="margin-top: 16px;"><strong>For:</strong></p>
+                    <p>Order status, billing questions, or refund requests</p>
+                </div>
+            </div>
+
+            <h2>Business Information</h2>
+            <p><strong>SubShield</strong></p>
+            <p>Contract Analysis Services for Construction Subcontractors</p>
+            <p>Email: colin@trysubshield.com</p>
+            <p>Website: <a href="https://trysubshield.com" style="color: #059669;">trysubshield.com</a></p>
+
+            <h2>Frequently Asked Questions</h2>
+            <p><strong>How do I submit a contract for review?</strong></p>
+            <p>After purchasing, you'll receive an email with instructions. Simply reply to that email with your contract attached as a PDF.</p>
+
+            <p><strong>What's your turnaround time?</strong></p>
+            <p>We deliver all contract analysis reports within 24 hours of receiving your contract.</p>
+
+            <p><strong>How do I request a refund?</strong></p>
+            <p>Email us at colin@trysubshield.com within 7 days of receiving your report. See our <a href="refund.html" style="color: #059669;">Refund Policy</a> for details.</p>
+
+            <p><strong>Is my contract kept confidential?</strong></p>
+            <p>Yes. All contracts are treated as strictly confidential. See our <a href="privacy.html" style="color: #059669;">Privacy Policy</a> for details.</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div>&copy; 2025 SubShield. All rights reserved.</div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="refund.html">Refund Policy</a>
+                <a href="contact.html">Contact</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

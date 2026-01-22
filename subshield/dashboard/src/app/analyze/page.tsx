@@ -317,87 +317,68 @@ function AnalyzePageContent() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-semibold text-gray-900 tracking-tight">
+      {/* Nav */}
+      <nav className="border-b border-gray-100">
+        <div className="max-w-2xl mx-auto px-6 h-14 flex items-center justify-between">
+          <Link href="/" className="font-semibold text-gray-900">
             SubShield
           </Link>
           {(previewAnalysis || fullAnalysis) && (
-            <button
-              onClick={reset}
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
+            <button onClick={reset} className="text-sm text-gray-500 hover:text-gray-900">
               Start over
             </button>
           )}
         </div>
-      </header>
+      </nav>
 
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* Upload Section */}
+      <main className="max-w-2xl mx-auto px-6 py-12">
+        {/* Upload */}
         {!previewAnalysis && !fullAnalysis && !loading && !parsing && (
           <>
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-semibold text-gray-900 mb-3">
-                Analyze your contract
-              </h1>
-              <p className="text-gray-600">
-                Upload your subcontract to identify risky clauses
-              </p>
-            </div>
+            <h1 className="text-2xl font-medium text-gray-900 mb-2">
+              Upload a contract
+            </h1>
+            <p className="text-gray-500 mb-8">
+              We'll analyze it and show you what to watch out for.
+            </p>
 
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
-                isDragActive
-                  ? 'border-gray-900 bg-gray-50'
-                  : 'border-gray-300 hover:border-gray-400'
+              className={`border border-dashed rounded-lg p-10 text-center cursor-pointer transition-colors ${
+                isDragActive ? 'border-gray-400 bg-gray-50' : 'border-gray-300 hover:border-gray-400'
               }`}
             >
               <input {...getInputProps()} />
-              <div className="text-gray-400 mb-4">
-                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-              </div>
-              <p className="text-gray-900 font-medium mb-1">
-                Drop your contract here
-              </p>
-              <p className="text-sm text-gray-500 mb-4">or click to browse</p>
-              <p className="text-xs text-gray-400">
-                PDF, DOCX, DOC, or TXT • Max 10MB
-              </p>
+              <p className="text-gray-900 mb-1">Drop your file here</p>
+              <p className="text-sm text-gray-500">PDF, DOCX, or TXT</p>
             </div>
 
-            <div className="mt-6 text-center">
-              <button
-                onClick={loadSampleContract}
-                className="text-sm text-gray-600 hover:text-gray-900 underline"
-              >
-                Try with a sample contract
+            <p className="mt-6 text-sm text-gray-400 text-center">
+              or{' '}
+              <button onClick={loadSampleContract} className="text-gray-600 hover:text-gray-900 underline">
+                try a sample contract
               </button>
-            </div>
+            </p>
           </>
         )}
 
-        {/* Loading State */}
+        {/* Loading */}
         {(loading || parsing) && (
-          <div className="text-center py-16">
-            <div className="w-8 h-8 border-2 border-gray-900 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-900 font-medium mb-1">
-              {parsing ? 'Reading document...' : 'Analyzing contract...'}
+          <div className="py-16 text-center">
+            <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-900 mb-1">
+              {parsing ? 'Reading document...' : 'Analyzing...'}
             </p>
             <p className="text-sm text-gray-500">
-              {parsing ? 'Extracting text from your file' : 'This usually takes 30-60 seconds'}
+              {parsing ? 'Extracting text' : 'Usually takes 30-60 seconds'}
             </p>
             {loading && (
               <div className="max-w-xs mx-auto mt-6">
-                <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gray-900 transition-all duration-300"
                     style={{ width: `${analysisProgress}%` }}
-                  ></div>
+                  />
                 </div>
               </div>
             )}
@@ -405,182 +386,159 @@ function AnalyzePageContent() {
         )}
 
         {error && (
-          <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-lg text-red-700 text-sm">
             {error}
           </div>
         )}
 
-        {/* Preview Analysis with Paywall */}
+        {/* Preview Results */}
         {previewAnalysis && showPaywall && (
           <div className="space-y-8">
             {isDemo && (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm">
-                <p className="text-gray-600">
-                  <span className="font-medium text-gray-900">Sample contract:</span> This is a demo analysis of a $485,000 electrical subcontract.{' '}
-                  <button onClick={reset} className="text-gray-900 underline">
-                    Upload your own
-                  </button>
-                </p>
-              </div>
+              <p className="text-sm text-gray-500">
+                Demo: $485,000 electrical subcontract.{' '}
+                <button onClick={reset} className="underline hover:text-gray-900">
+                  Upload yours
+                </button>
+              </p>
             )}
 
-            {/* Risk Score */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Risk Score</p>
-                    <div className="flex items-baseline gap-1">
-                      <span className={`text-5xl font-semibold ${getRiskColor(previewAnalysis.riskScore)}`}>
-                        {previewAnalysis.riskScore}
-                      </span>
-                      <span className="text-xl text-gray-400">/10</span>
-                    </div>
-                  </div>
-                  <span className={`text-sm font-medium px-3 py-1 rounded ${
-                    previewAnalysis.recommendation === 'WALK AWAY'
-                      ? 'bg-red-100 text-red-700'
-                      : previewAnalysis.recommendation === 'NEGOTIATE'
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'bg-green-100 text-green-700'
-                  }`}>
-                    {previewAnalysis.recommendation}
-                  </span>
-                </div>
-                <p className="text-gray-600">{previewAnalysis.executiveSummary}</p>
+            {/* Score */}
+            <div>
+              <p className="text-sm text-gray-400 mb-1">Risk score</p>
+              <div className="flex items-baseline gap-2">
+                <span className={`text-4xl font-medium ${getRiskColor(previewAnalysis.riskScore)}`}>
+                  {previewAnalysis.riskScore}
+                </span>
+                <span className="text-gray-400">/10</span>
+                <span className={`ml-2 text-sm font-medium px-2 py-0.5 rounded ${
+                  previewAnalysis.recommendation === 'WALK AWAY'
+                    ? 'bg-red-50 text-red-600'
+                    : previewAnalysis.recommendation === 'NEGOTIATE'
+                    ? 'bg-amber-50 text-amber-600'
+                    : 'bg-green-50 text-green-600'
+                }`}>
+                  {previewAnalysis.recommendation}
+                </span>
               </div>
+              <p className="mt-3 text-gray-600">{previewAnalysis.executiveSummary}</p>
             </div>
 
-            {/* Issues Preview */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
-                <span className="font-medium text-gray-900">Issues Found</span>
-                <span className="text-sm text-gray-500">{previewAnalysis.totalIssuesFound} total</span>
-              </div>
-              <div className="divide-y divide-gray-200">
-                {previewAnalysis.topThreeIssues.map((issue, index) => (
-                  <div key={index} className="p-4">
-                    <div className="flex items-start gap-3">
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded mt-0.5 ${
+            {/* Issues */}
+            <div>
+              <p className="text-sm text-gray-400 mb-3">
+                {previewAnalysis.totalIssuesFound} issues found
+              </p>
+              <div className="space-y-3">
+                {previewAnalysis.topThreeIssues.map((issue, i) => (
+                  <div key={i} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium text-gray-900">{issue.title}</p>
+                        <p className="text-sm text-gray-500 mt-1">{issue.preview}</p>
+                      </div>
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded flex-shrink-0 ${
                         issue.severity === 'CRITICAL'
-                          ? 'bg-red-100 text-red-700'
+                          ? 'bg-red-50 text-red-600'
                           : issue.severity === 'WARNING'
-                          ? 'bg-amber-100 text-amber-700'
-                          : 'bg-blue-100 text-blue-700'
+                          ? 'bg-amber-50 text-amber-600'
+                          : 'bg-blue-50 text-blue-600'
                       }`}>
                         {issue.severity}
                       </span>
-                      <div>
-                        <p className="font-medium text-gray-900 mb-1">{issue.title}</p>
-                        <p className="text-sm text-gray-600">{issue.preview}</p>
-                      </div>
                     </div>
                   </div>
                 ))}
-                {previewAnalysis.totalIssuesFound > 3 && (
-                  <div className="p-4 bg-gray-50 text-center text-sm text-gray-500">
-                    +{previewAnalysis.totalIssuesFound - 3} more issues in full report
-                  </div>
-                )}
               </div>
+              {previewAnalysis.totalIssuesFound > 3 && (
+                <p className="mt-3 text-sm text-gray-400">
+                  +{previewAnalysis.totalIssuesFound - 3} more in full report
+                </p>
+              )}
             </div>
 
-            {/* Unlock CTA */}
-            <div className="border border-gray-200 rounded-lg p-6">
-              <div className="max-w-md mx-auto text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Get the full report
-                </h3>
-                <p className="text-sm text-gray-600 mb-6">
-                  Includes detailed analysis of all {previewAnalysis.totalIssuesFound} issues with negotiation language for each.
-                </p>
-
-                <div className="mb-4">
-                  <span className="text-3xl font-semibold text-gray-900">$147</span>
-                  <span className="text-gray-500 ml-1">one-time</span>
-                </div>
-
-                <input
-                  type="email"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onBlur={handleEmailBlur}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                />
-                <button
-                  onClick={handlePayment}
-                  disabled={loading || !email}
-                  className="w-full bg-gray-900 text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                >
-                  Unlock Full Report
-                </button>
-
-                <p className="mt-4 text-xs text-gray-500">
-                  30-day money-back guarantee
-                </p>
+            {/* Paywall */}
+            <div className="border-t border-gray-100 pt-8">
+              <p className="font-medium text-gray-900 mb-1">Get the full report</p>
+              <p className="text-sm text-gray-500 mb-4">
+                Detailed analysis of all {previewAnalysis.totalIssuesFound} issues with suggested redlines.
+              </p>
+              <div className="flex items-baseline gap-1 mb-4">
+                <span className="text-2xl font-medium text-gray-900">$147</span>
               </div>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={handleEmailBlur}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mb-3 focus:outline-none focus:border-gray-400"
+              />
+              <button
+                onClick={handlePayment}
+                disabled={loading || !email}
+                className="w-full bg-gray-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+              >
+                Unlock report
+              </button>
+              <p className="mt-3 text-xs text-gray-400 text-center">
+                30-day refund if not useful
+              </p>
             </div>
           </div>
         )}
 
-        {/* Full Analysis Report */}
+        {/* Full Report */}
         {fullAnalysis && (
           <div className="space-y-8">
-            {/* Risk Score */}
-            <div className="border border-gray-200 rounded-lg p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Risk Score</p>
-                  <div className="flex items-baseline gap-1">
-                    <span className={`text-5xl font-semibold ${getRiskColor(fullAnalysis.riskScore)}`}>
-                      {fullAnalysis.riskScore}
-                    </span>
-                    <span className="text-xl text-gray-400">/10</span>
-                  </div>
-                </div>
-                <span className={`text-sm font-medium px-3 py-1 rounded ${
+            {/* Score */}
+            <div>
+              <p className="text-sm text-gray-400 mb-1">Risk score</p>
+              <div className="flex items-baseline gap-2">
+                <span className={`text-4xl font-medium ${getRiskColor(fullAnalysis.riskScore)}`}>
+                  {fullAnalysis.riskScore}
+                </span>
+                <span className="text-gray-400">/10</span>
+                <span className={`ml-2 text-sm font-medium px-2 py-0.5 rounded ${
                   fullAnalysis.recommendation === 'WALK AWAY'
-                    ? 'bg-red-100 text-red-700'
+                    ? 'bg-red-50 text-red-600'
                     : fullAnalysis.recommendation === 'NEGOTIATE'
-                    ? 'bg-amber-100 text-amber-700'
-                    : 'bg-green-100 text-green-700'
+                    ? 'bg-amber-50 text-amber-600'
+                    : 'bg-green-50 text-green-600'
                 }`}>
                   {fullAnalysis.recommendation}
                 </span>
               </div>
-              <p className="text-gray-600">{fullAnalysis.executiveSummary}</p>
+              <p className="mt-3 text-gray-600">{fullAnalysis.executiveSummary}</p>
             </div>
 
-            {/* Contract Summary */}
+            {/* Contract Details */}
             {fullAnalysis.contractSummary && (
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                  <span className="font-medium text-gray-900">Contract Details</span>
-                </div>
-                <div className="p-6 grid grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm text-gray-400 mb-3">Contract details</p>
+                <div className="grid grid-cols-2 gap-4 text-sm">
                   {fullAnalysis.contractSummary.projectName && (
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">Project</p>
-                      <p className="font-medium text-gray-900">{fullAnalysis.contractSummary.projectName}</p>
+                      <p className="text-gray-400">Project</p>
+                      <p className="text-gray-900">{fullAnalysis.contractSummary.projectName}</p>
                     </div>
                   )}
                   {fullAnalysis.contractSummary.contractValue && (
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">Value</p>
-                      <p className="font-medium text-gray-900">{fullAnalysis.contractSummary.contractValue}</p>
+                      <p className="text-gray-400">Value</p>
+                      <p className="text-gray-900">{fullAnalysis.contractSummary.contractValue}</p>
                     </div>
                   )}
                   {fullAnalysis.contractSummary.paymentTerms && (
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">Payment Terms</p>
-                      <p className="font-medium text-gray-900">{fullAnalysis.contractSummary.paymentTerms}</p>
+                      <p className="text-gray-400">Payment</p>
+                      <p className="text-gray-900">{fullAnalysis.contractSummary.paymentTerms}</p>
                     </div>
                   )}
                   {fullAnalysis.contractSummary.retainage && (
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">Retainage</p>
-                      <p className="font-medium text-gray-900">{fullAnalysis.contractSummary.retainage}</p>
+                      <p className="text-gray-400">Retainage</p>
+                      <p className="text-gray-900">{fullAnalysis.contractSummary.retainage}</p>
                     </div>
                   )}
                 </div>
@@ -593,20 +551,14 @@ function AnalyzePageContent() {
               { issues: fullAnalysis.warningIssues, label: 'Warning', color: 'amber' },
               { issues: fullAnalysis.cautionIssues, label: 'Caution', color: 'blue' },
             ].filter(g => g.issues?.length > 0).map((group) => (
-              <div key={group.label} className="border border-gray-200 rounded-lg overflow-hidden">
-                <div className={`px-6 py-4 border-b border-gray-200 flex items-center gap-2 ${
-                  group.color === 'red' ? 'bg-red-50' :
-                  group.color === 'amber' ? 'bg-amber-50' : 'bg-blue-50'
+              <div key={group.label}>
+                <p className={`text-sm font-medium mb-3 ${
+                  group.color === 'red' ? 'text-red-600' :
+                  group.color === 'amber' ? 'text-amber-600' : 'text-blue-600'
                 }`}>
-                  <div className={`w-2 h-2 rounded-full ${
-                    group.color === 'red' ? 'bg-red-600' :
-                    group.color === 'amber' ? 'bg-amber-500' : 'bg-blue-500'
-                  }`}></div>
-                  <span className="font-medium text-gray-900">
-                    {group.label} Issues ({group.issues.length})
-                  </span>
-                </div>
-                <div className="divide-y divide-gray-200">
+                  {group.label} ({group.issues.length})
+                </p>
+                <div className="space-y-4">
                   {group.issues.map((issue, index) => (
                     <IssueCard key={index} issue={issue} />
                   ))}
@@ -615,35 +567,29 @@ function AnalyzePageContent() {
             ))}
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-500">
-                Analysis by SubShield
-              </p>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => window.print()}
-                  className="text-sm text-gray-600 hover:text-gray-900"
-                >
-                  Print / Save PDF
-                </button>
-                <button
-                  onClick={reset}
-                  className="text-sm bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-800"
-                >
-                  Analyze Another
-                </button>
-              </div>
+            <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+              <button
+                onClick={() => window.print()}
+                className="text-sm text-gray-500 hover:text-gray-900"
+              >
+                Print / Save PDF
+              </button>
+              <button
+                onClick={reset}
+                className="text-sm text-gray-900 hover:text-gray-600"
+              >
+                Analyze another →
+              </button>
             </div>
           </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 mt-16">
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          <p className="text-xs text-gray-500 text-center">
-            SubShield provides AI-assisted contract analysis for informational purposes only. This is not legal advice.
-            Consult a licensed construction attorney before making decisions about your contracts.
+      <footer className="border-t border-gray-100 mt-16">
+        <div className="max-w-2xl mx-auto px-6 py-6">
+          <p className="text-xs text-gray-400 text-center">
+            Not legal advice. For informational purposes only.
           </p>
         </div>
       </footer>
@@ -655,7 +601,7 @@ export default function AnalyzePage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
       </div>
     }>
       <AnalyzePageContent />
@@ -664,7 +610,6 @@ export default function AnalyzePage() {
 }
 
 function IssueCard({ issue }: { issue: Issue }) {
-  const [expanded, setExpanded] = useState(true);
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = (text: string) => {
@@ -674,61 +619,43 @@ function IssueCard({ issue }: { issue: Issue }) {
   };
 
   return (
-    <div className="p-6">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between text-left"
-      >
-        <span className="font-medium text-gray-900">{issue.title}</span>
-        <svg
-          className={`w-4 h-4 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-      {expanded && (
-        <div className="mt-4 space-y-4">
-          <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Contract Language</p>
-            <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded border border-gray-200 italic">
-              &ldquo;{issue.clauseText}&rdquo;
+    <div className="border border-gray-200 rounded-lg p-4">
+      <p className="font-medium text-gray-900 mb-3">{issue.title}</p>
+
+      <div className="space-y-3 text-sm">
+        <div>
+          <p className="text-gray-400 mb-1">Contract says</p>
+          <p className="text-gray-600 italic">"{issue.clauseText}"</p>
+        </div>
+
+        <div>
+          <p className="text-gray-400 mb-1">What it means</p>
+          <p className="text-gray-600">{issue.explanation}</p>
+        </div>
+
+        <div>
+          <p className="text-gray-400 mb-1">Suggested revision</p>
+          <div className="relative bg-gray-50 p-3 rounded border border-gray-100">
+            <p className="text-gray-700 pr-8 font-mono text-xs leading-relaxed">
+              {issue.negotiationScript}
             </p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">What This Means</p>
-            <p className="text-sm text-gray-700">{issue.explanation}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Suggested Response</p>
-            <div className="relative">
-              <p className="text-sm text-gray-700 bg-green-50 p-3 pr-10 rounded border border-green-200">
-                {issue.negotiationScript}
-              </p>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  copyToClipboard(issue.negotiationScript);
-                }}
-                className="absolute top-2 right-2 p-1.5 text-green-600 hover:bg-green-100 rounded"
-                title="Copy"
-              >
-                {copied ? (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={() => copyToClipboard(issue.negotiationScript)}
+              className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600"
+            >
+              {copied ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

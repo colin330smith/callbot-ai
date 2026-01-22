@@ -12,14 +12,16 @@
     "@sentry/nextjs": "^10.36.0",
     "@supabase/ssr": "^0.4.0",
     "@supabase/supabase-js": "^2.45.0",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.424.0",
     "mammoth": "^1.11.0",
-    "next": "14.2.5",
+    "next": "^16.1.4",
     "pdf-parse": "^2.4.5",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.3.8",
-    "stripe": "^20.2.0"
+    "stripe": "^20.2.0",
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",
